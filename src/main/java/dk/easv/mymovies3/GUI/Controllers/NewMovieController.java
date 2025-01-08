@@ -53,7 +53,27 @@ public class NewMovieController {
             alert.showAndWait();
             return;
         }
-
+        Double imdbRating = null;
+        if (!txtIMDBRating.getText().isEmpty()) {
+            try {
+                imdbRating = Double.parseDouble(txtIMDBRating.getText());
+                if (imdbRating < 0 || imdbRating > 10) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please enter a valid imdbRating");
+                    alert.showAndWait();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter a numeric value for imdbRating");
+                alert.showAndWait();
+                return;
+            }
+        }
         Integer rating = null;
         if (!txtPersonalRating.getText().isEmpty()) {
             try {
@@ -78,7 +98,6 @@ public class NewMovieController {
         }
 
         String title = txtTitle.getText();
-        double imdbRating = Double.parseDouble(txtIMDBRating.getText());
         //TODO not used rn, because FileAlreadyExists isnt handled yet. fix this later
         String path = txtFilePath.getText();
         int year = Integer.parseInt(txtMovieYear.getText());

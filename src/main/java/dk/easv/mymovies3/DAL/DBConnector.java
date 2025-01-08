@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class DBConnector {
 
-    private static final String PROPERTY_FILE = "MyTunesButMovie/config/database.settings";
+    private static final String PROPERTY_FILE = "config/database.settings";
     private SQLServerDataSource dataSource;
 
     public DBConnector() throws IOException {
