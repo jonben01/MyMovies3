@@ -46,11 +46,7 @@ public class NewMovieController {
                 || txtPersonalRating.getText() == null || txtPersonalRating.getText().isEmpty()
                 || txtIMDBRating.getText() == null || txtIMDBRating.getText().isEmpty()
                 || txtTitle.getText() == null || txtTitle.getText().isEmpty())  {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Please fill all the fields");
-            alert.showAndWait();
+            alertMethod("Please fill out all fields");
             return;
         }
         Double imdbRating = null;
@@ -58,19 +54,11 @@ public class NewMovieController {
             try {
                 imdbRating = Double.parseDouble(txtIMDBRating.getText());
                 if (imdbRating < 0 || imdbRating > 10) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Please enter a valid imdbRating");
-                    alert.showAndWait();
+                    alertMethod("Please enter a valid IMDB-Rating between 0 and 10");
                     return;
                 }
             } catch (NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(null);
-                alert.setContentText("Please enter a numeric value for imdbRating");
-                alert.showAndWait();
+                alertMethod("Please enter a numeric value for IMDB-Rating");
                 return;
             }
         }
@@ -79,24 +67,15 @@ public class NewMovieController {
             try {
                 rating = Integer.parseInt(txtPersonalRating.getText());
                 if (rating > 10 || rating < 0) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Please enter a whole number rating between 0 and 10");
-                    alert.showAndWait();
+                    alertMethod("Please enter a whole number between 0-10 for personal rating");
                     return;
                 }
 
             } catch (NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(null);
-                alert.setContentText("Please enter a numeric value for personal rating");
-                alert.showAndWait();
+                alertMethod("Please enter a numeric value for personal rating");
                 return;
             }
         }
-
         String title = txtTitle.getText();
         //TODO not used rn, because FileAlreadyExists isnt handled yet. fix this later
         String path = txtFilePath.getText();
@@ -127,7 +106,16 @@ public class NewMovieController {
 
         Stage stage =(Stage) btnAddMovie.getScene().getWindow();
         stage.close();
+    }
 
+    public void alertMethod(String alertString) {
+
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(alertString);
+        alert.showAndWait();
     }
 
     public void handleCancelMovie(ActionEvent actionEvent) {
