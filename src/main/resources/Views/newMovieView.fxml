@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="theguys.mytunesbutmovie.GUI.Controller.NewMovieController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.NewMovieController">
    <children>
       <TextField fx:id="txtTitle" layoutX="47.0" layoutY="39.0" promptText="Title" />
       <TextField fx:id="txtIMDBRating" layoutX="48.0" layoutY="99.0" promptText="Imdb" />
