@@ -12,7 +12,5 @@ public interface ICategoryDataAccess {
 
     List<Category> getAllCategories () throws SQLException;
 
-    void updateCategory (Category category) throws SQLException;
-
     void deleteCategory (Category category) throws SQLException;
 }
