@@ -1,11 +1,11 @@
 package dk.easv.mymovies3.DAL;
 
 import dk.easv.mymovies3.BE.Category;
+import dk.easv.mymovies3.BE.Movie;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryDAO implements ICategoryDataAccess {
@@ -28,8 +28,22 @@ public class CategoryDAO implements ICategoryDataAccess {
         }
 
         @Override
-        public List<Category> getAllCategories () throws SQLException {
-            return List.of();
+        public ArrayList<Category> getAllCategories () throws SQLException {
+                ArrayList<Category> allCategories = new ArrayList<>();
+
+                try (Connection conn = connector.getConnection();
+                     Statement stmt = conn.createStatement()) {
+
+                    String sql = "SELECT Category_Name FROM Category";
+                    ResultSet rs = stmt.executeQuery(sql);
+
+                    while (rs.next()) {
+                        allCategories.add(new Category(rs.getString("Category_Name")));
+                    }
+                    return allCategories;
+                } catch (SQLException e) {
+                    throw new SQLException("Could not get all categories from database", e);
+                }
         }
 
 

@@ -5,6 +5,7 @@ import dk.easv.mymovies3.BLL.CategoryManager;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class CategoryModel {
         CategoryManager categoryManager;
@@ -16,5 +17,13 @@ public class CategoryModel {
 
     public void CreateCategory(Category category) throws SQLException {
         Category createdCategory = categoryManager.CreateCategory(category);
+    }
+
+    public ArrayList<Category> GetAllCategories() throws SQLException {
+           ArrayList<Category> categories = categoryManager.GetAllCategories();
+           return categories;
+    }
+
+    private void DeleteCategory(String selectedItem) {
     }
 }
