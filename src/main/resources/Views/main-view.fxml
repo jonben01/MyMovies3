@@ -39,13 +39,13 @@
          <children>
             <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <children>
-                  <TableView prefHeight="486.0" prefWidth="592.0">
+                  <TableView fx:id="tblMovies" prefHeight="486.0" prefWidth="592.0">
                     <columns>
-                      <TableColumn prefWidth="165.0" text="Title" />
-                      <TableColumn minWidth="0.0" prefWidth="62.0" text="IMDB" />
-                        <TableColumn prefWidth="98.0" text="Personal Rating" />
-                        <TableColumn prefWidth="97.0" text="Year" />
-                        <TableColumn prefWidth="169.0" text="Category" />
+                      <TableColumn fx:id="colTitle" prefWidth="165.0" text="Title" />
+                      <TableColumn fx:id="colIMDB" minWidth="0.0" prefWidth="62.0" text="IMDB" />
+                        <TableColumn fx:id="colPersonalRating" prefWidth="98.0" text="Personal Rating" />
+                        <TableColumn fx:id="colYear" prefWidth="97.0" text="Year" />
+                        <TableColumn fx:id="colCategory" prefWidth="169.0" text="Category" />
                     </columns>
                   </TableView>
                   <HBox prefHeight="486.0" prefWidth="203.0" />

@@ -36,7 +36,7 @@ public class NewMovieController {
 
     private MovieModel movieModel;
 
-    public NewMovieController() throws IOException {
+    public NewMovieController() throws Exception {
         movieModel = new MovieModel();
     }
 

@@ -3,6 +3,7 @@ package dk.easv.mymovies3.BLL;
 
 
 import dk.easv.mymovies3.BE.Movie;
+import dk.easv.mymovies3.DAL.IMovieDataAccess;
 import dk.easv.mymovies3.DAL.MovieDAO;
 
 import java.io.IOException;
@@ -18,10 +19,11 @@ public class MovieManager {
     }
 
     //TODO IMPLEMENT THIS
-    public List<Movie> getAllMovies() {
-        return null;
+    public List<Movie> getAllMovies() throws Exception {
+            return movieDAO.getAllMovies();
     }
-    //TODO IMPLEMENT THIS
+
+            //TODO IMPLEMENT THIS
     public Movie createMovie(Movie movie) throws SQLException {
         movieDAO.createMovie(movie);
         return movie;

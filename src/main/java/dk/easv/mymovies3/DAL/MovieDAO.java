@@ -4,6 +4,7 @@ package dk.easv.mymovies3.DAL;
 import dk.easv.mymovies3.BE.Movie;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,38 +43,35 @@ public class MovieDAO implements IMovieDataAccess {
         }
     }
 
-    @Override
     public List<Movie> getAllMovies() throws Exception {
         ArrayList<Movie> allMovies = new ArrayList<>();
 
         try (Connection conn = connector.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating. m.Personal_Rating, m.File_Path, Movie_Year " +
+            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, m.Movie_Year " +
                     "FROM Movie m " +
                     "JOIN CatMov_Junction cmj ON m.Id = cmj.Movie_Id " +
                     "JOIN Category c ON cmj.Category_Id = c.Id";
-
 
             ResultSet rs = stmt.executeQuery(sql);
 
             // Loop through rows from the database result set
             while (rs.next()) {
-
-
-                //int id = rs.getInt("Id");
                 String title = rs.getString("Movie_Title");
-                double imdb = rs.getDouble("IMDB_Rating");
+                BigDecimal imdb = rs.getBigDecimal("IMDB_Rating");
+                double imdbRating = imdb.doubleValue();
                 int personal = rs.getInt("Personal_Rating");
                 String filePath = rs.getString("File_Path");
                 int year = rs.getInt("Movie_Year");
 
 
-
-
-                Movie movie = new Movie( /*id,*/  title, imdb, personal, filePath, year);
+                Movie movie = new Movie(title, imdbRating, personal, filePath, year);
                 allMovies.add(movie);
             }
+
+            // Debugging: print the number of movies loaded
+            System.out.println("Movies from database: " + allMovies.size());
             return allMovies;
 
         } catch (SQLException ex) {
@@ -81,6 +79,7 @@ public class MovieDAO implements IMovieDataAccess {
             throw new Exception("Could not get movies from database", ex);
         }
     }
+
 
     @Override
     public void updateMovie(Movie movie) throws SQLException {

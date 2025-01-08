@@ -11,15 +11,30 @@ import java.sql.SQLException;
 
 public class MovieModel {
 
-    private MovieManager movieManager;
     private ObservableList<Movie> moviesToBeViewed;
+    private MovieManager movieManager;
 
-    public MovieModel() throws IOException {
+
+    public MovieModel() throws Exception {
         movieManager = new MovieManager();
         moviesToBeViewed = FXCollections.observableArrayList();
-        //moviesToBeViewed.addAll(movieManager.getAllMovies());
+        moviesToBeViewed.addAll(movieManager.getAllMovies());
 
+        /*// Adding sample data for debugging
+        moviesToBeViewed.add(new Movie("Sample Movie", 7.5, 8, "/path/to/file", 2023));*/
+
+        System.out.println("Movies loaded: " + moviesToBeViewed.size());
+        for (Movie movie : moviesToBeViewed) {
+            System.out.println(movie.getMovieTitle());
+        }
     }
+
+
+
+    public ObservableList<Movie> getObservableMovies() {
+        return moviesToBeViewed;
+    }
+
     public void createMovie(Movie movie) throws SQLException {
         Movie movieCreated = movieManager.createMovie(movie);
         moviesToBeViewed.add(movieCreated);
