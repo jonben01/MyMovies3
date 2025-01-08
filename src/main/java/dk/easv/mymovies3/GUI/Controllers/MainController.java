@@ -23,5 +23,6 @@ public class MainController {
 
     @FXML
     private void handleAddMovie(ActionEvent actionEvent) {
+
     }
 }
