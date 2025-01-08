@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class NewCategoryController {
@@ -13,7 +14,7 @@ public class NewCategoryController {
     @FXML
     private TextField txtCategory;
 
-    public NewCategoryController() {
+    public NewCategoryController() throws IOException {
         categoryModel = new CategoryModel();
     }
 

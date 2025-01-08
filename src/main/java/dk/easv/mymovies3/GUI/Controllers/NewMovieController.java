@@ -1,10 +1,14 @@
 package dk.easv.mymovies3.GUI.Controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import dk.easv.mymovies3.BE.Movie;
 import dk.easv.mymovies3.GUI.Models.MovieModel;
@@ -122,6 +126,24 @@ public class NewMovieController {
     }
 
     public void handleEditMovie(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    private void OnNewCategoryClick(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newCategoryView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("New Category");
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
