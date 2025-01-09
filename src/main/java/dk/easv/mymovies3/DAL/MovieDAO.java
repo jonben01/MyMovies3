@@ -32,16 +32,13 @@ public class MovieDAO implements IMovieDataAccess {
             }
             ps.setString(4, movie.getFilePath());
             ps.setInt(5, movie.getMovieYear());
-
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 movie.setId(rs.getInt(1));
             }
-
             return movie;
-
 
         } catch (SQLException e) {
             throw new SQLException("Could not create new Movie", e);

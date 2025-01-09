@@ -43,16 +43,6 @@ public class MainController implements Initializable {
     private TableColumn<Movie, String> colCategory;
 
 
-
-
-
-
-
-
-
-
-
-
     public void handleAddMovie(ActionEvent actionEvent) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newMovieView.fxml"));

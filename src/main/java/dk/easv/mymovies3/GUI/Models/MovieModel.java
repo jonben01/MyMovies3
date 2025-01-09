@@ -40,6 +40,18 @@ public class MovieModel {
         moviesToBeViewed.add(movieCreated);
     }
 
+    public Movie getMovieByFilePath(String filePath) {
+        for (Movie movie : moviesToBeViewed) {
+            if (movie.getFilePath().equals(filePath)) {
+                return movie;
+            }
+        }
+        return null;
+    }
+
+    public void deleteMovie(Movie movieToBeDeleted) {
+    }
+
 //TODO implement this
 
 /* needed for when fileAlreadyExists needs to be handled in ADD MOVIE method - maincontroller.

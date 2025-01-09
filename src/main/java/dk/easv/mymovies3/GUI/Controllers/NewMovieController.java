@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import dk.easv.mymovies3.BE.Movie;
@@ -50,10 +51,17 @@ public class NewMovieController implements Initializable {
     }
 
     public void handleFileChooser(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Resource File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Video Files", "*.mp4", "*.mpeg4"));
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
+            txtFilePath.setText(file.getAbsolutePath());
 
+        }
     }
 
-    public void handleAddMovie(ActionEvent actionEvent) throws SQLException {
+    public void handleAddMovie(ActionEvent actionEvent) throws SQLException, IOException {
         //TODO make this better later
         if (txtFilePath.getText() == null || txtFilePath.getText().isEmpty()
                 || txtMovieYear.getText() == null || txtMovieYear.getText().isEmpty()
@@ -93,13 +101,10 @@ public class NewMovieController implements Initializable {
         //TODO extract below as a method later.
         String title = txtTitle.getText();
         //TODO not used rn, because FileAlreadyExists isnt handled yet. fix this later
-        String path = txtFilePath.getText();
         int year = Integer.parseInt(txtMovieYear.getText());
-
-
-        /* SAVE FOR LATER.
-        String destinationDir = "MyTunesButMovie/movies";
+        String destinationDir = "MyMovies3/movies";
         Path destinationPath = Paths.get(destinationDir, new File(txtFilePath.getText()).getName());
+
         try {
             Files.copy(Paths.get(txtFilePath.getText()), destinationPath);
         } catch (FileAlreadyExistsException e) {
@@ -108,11 +113,14 @@ public class NewMovieController implements Initializable {
             alert.setHeaderText("File already exists");
             alert.setContentText("Replace existing file with new file?");
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() = ButtonType.OK) {
-                Movie movieToBeDeleted
+            if (result.get() == ButtonType.OK) {
+                Movie movieToBeDeleted = movieModel.getMovieByFilePath(destinationPath.toString());
+                if (movieToBeDeleted != null) {
+                    movieModel.deleteMovie(movieToBeDeleted);
+                }
             }
         }
-         */
+
         //TODO newFilePath MUST be changed to songDestinationPath, when fileAlreadyExists is handled.
         String newFilePath = txtFilePath.getText();
         Movie newMovie = new Movie(title, imdbRating, rating, newFilePath, year);
