@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="722.0" prefWidth="1059.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.MainController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="722.0" prefWidth="1059.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.MainController">
    <children>
       <VBox prefHeight="83.0" prefWidth="600.0">
          <children>
@@ -75,6 +75,9 @@
             </VBox>
          </children>
       </VBox>
-      <VBox prefHeight="117.0" prefWidth="600.0" />
+      <VBox prefHeight="117.0" prefWidth="600.0">
+         <children>
+            <Button fx:id="btnPlayMovie" mnemonicParsing="false" onAction="#handlePlayMovie" text="play" />
+         </children></VBox>
    </children>
 </VBox>

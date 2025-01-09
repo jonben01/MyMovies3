@@ -1,4 +1,5 @@
 package dk.easv.mymovies3.GUI.Controllers;
+import javafx.scene.control.Alert;
 import org.controlsfx.control.NotificationPane;
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BE.Movie;
@@ -18,6 +19,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -27,35 +30,12 @@ public class MainController implements Initializable {
     private MovieModel movieModel;
     private CategoryModel categoryModel;
 
-    @FXML
-    private TableView<Movie> tblMovies;
-
-
-
-    @FXML
-    private TableColumn<Movie, String> colTitle;
-
-    @FXML
-    private TableColumn<Movie, Double> colIMDB;
-
-    @FXML
-    private TableColumn<Movie, Integer> colPersonalRating;
-
-    @FXML
-    private TableColumn<Movie, Integer> colYear;
-
-    @FXML
-    private TableColumn<Movie, String> colCategory;
-
-
-
-
-
-
-
-
-
-
+    @FXML private TableView<Movie> tblMovies;
+    @FXML private TableColumn<Movie, String> colTitle;
+    @FXML private TableColumn<Movie, Double> colIMDB;
+    @FXML private TableColumn<Movie, Integer> colPersonalRating;
+    @FXML private TableColumn<Movie, Integer> colYear;
+    @FXML private TableColumn<Movie, String> colCategory;
 
 
     public void handleAddMovie(ActionEvent actionEvent) {
@@ -102,20 +82,42 @@ public class MainController implements Initializable {
         tblMovies.setItems(movieModel.getObservableMovies());
     }
 
-
-
-
+    public void alertMethod(String alertString, Alert.AlertType alertType) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(alertString);
+        alert.showAndWait();
+    }
 
     public MainController() throws Exception {
 
             movieModel = new MovieModel();
-
-
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableViews();
+    }
+
+    public void handlePlayMovie(ActionEvent actionEvent) {
+        Movie movieFile = tblMovies.getSelectionModel().getSelectedItem();
+        File file = new File (movieFile.getFilePath());
+        if (!file.exists()) {
+            //TODO delete the selected item in database??? WHY IS THERE IF THE FILE DOESNT EXIST
+            alertMethod("File doesnt exist, sorry", Alert.AlertType.INFORMATION);
+            return;
+        }
+
+        if (Desktop.isDesktopSupported()) {
+            Desktop desktop = Desktop.getDesktop();
+
+            try {
+                desktop.open(file);
+            } catch (IOException e) {
+                throw new RuntimeException("oopsie woopsie",e);
+            }
+        }
     }
 }
 
