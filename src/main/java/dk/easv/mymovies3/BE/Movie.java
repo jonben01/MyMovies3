@@ -2,12 +2,15 @@ package dk.easv.mymovies3.BE;
 
 public class Movie {
 
-
+    private int id;
     private String movieTitle;
     private Double imdbRating;
     private Integer personalRating;
     private String filePath;
     private int movieYear;
+
+    public int getId() {return id;}
+    public void setId(int id) {this.id = id;}
 
     public String getMovieTitle() {return movieTitle;}
     public void setMovieTitle(String movieTitle) {this.movieTitle = movieTitle;}
@@ -25,6 +28,15 @@ public class Movie {
     public void setMovieYear(int movieYear) {this.movieYear = movieYear;}
 
     public Movie(String movieTitle, Double imdbRating, Integer personalRating, String filePath, int movieYear) {
+        this.movieTitle = movieTitle;
+        this.imdbRating = imdbRating;
+        this.personalRating = personalRating;
+        this.filePath = filePath;
+        this.movieYear = movieYear;
+    }
+
+    public Movie(int id, String movieTitle, Double imdbRating, Integer personalRating, String filePath, int movieYear) {
+        this.id = id;
         this.movieTitle = movieTitle;
         this.imdbRating = imdbRating;
         this.personalRating = personalRating;

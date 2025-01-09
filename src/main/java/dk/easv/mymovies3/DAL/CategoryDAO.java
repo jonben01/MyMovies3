@@ -25,30 +25,43 @@ public class CategoryDAO implements ICategoryDataAccess {
         } catch (SQLException e) {
             throw new SQLException("Could not create new category", e);
         }
-        }
+    }
 
-        @Override
-        public ArrayList<Category> getAllCategories () throws SQLException {
-                ArrayList<Category> allCategories = new ArrayList<>();
+    @Override
+    public ArrayList<Category> getAllCategories () throws SQLException {
+        ArrayList<Category> allCategories = new ArrayList<>();
+        try (Connection conn = connector.getConnection();
+             Statement stmt = conn.createStatement()) {
 
-                try (Connection conn = connector.getConnection();
-                     Statement stmt = conn.createStatement()) {
+            String sql = "SELECT Id, Category_Name FROM Category";
+            ResultSet rs = stmt.executeQuery(sql);
 
-                    String sql = "SELECT Category_Name FROM Category";
-                    ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                int id = rs.getInt("Id");
+                String categoryName = rs.getString("Category_Name");
+                allCategories.add(new Category(id, categoryName));
+                /* er nødt til at bruge id for junction table
+                allCategories.add(new Category(rs.getString("Category_Name")));
+                 */
 
-                    while (rs.next()) {
-                        allCategories.add(new Category(rs.getString("Category_Name")));
-                    }
-                    return allCategories;
-                } catch (SQLException e) {
-                    throw new SQLException("Could not get all categories from database", e);
-                }
-        }
-
-
-        @Override
-        public void deleteCategory (Category category) throws SQLException {
-
+            }
+            return allCategories;
+        } catch (SQLException e) {
+            throw new SQLException("Could not get all categories from database", e);
         }
     }
+
+    @Override
+    public void deleteCategory (Category category) throws SQLException {
+
+    }
+
+    public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
+        String sql = "INSERT INTO dbo.CatMov_Junction (Movie_Id, Category_Id) " + "VALUES(?, ?);";
+        try (Connection connection = connector.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, movieId);
+            ps.setInt(2, categoryId);
+            ps.executeUpdate();
+        }
+    }
+}

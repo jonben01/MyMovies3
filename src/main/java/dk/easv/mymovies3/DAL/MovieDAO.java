@@ -21,7 +21,7 @@ public class MovieDAO implements IMovieDataAccess {
     public Movie createMovie(Movie movie) throws SQLException {
         String sql = "INSERT INTO dbo.Movie(Movie_Title, IMDB_Rating, Personal_Rating, File_Path, Movie_Year) " +
                 "VALUES (?,?,?,?,?);";
-        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, movie.getMovieTitle());
             ps.setDouble(2, movie.getImdbRating());
@@ -34,6 +34,11 @@ public class MovieDAO implements IMovieDataAccess {
             ps.setInt(5, movie.getMovieYear());
 
             ps.executeUpdate();
+
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                movie.setId(rs.getInt(1));
+            }
 
             return movie;
 
@@ -58,6 +63,7 @@ public class MovieDAO implements IMovieDataAccess {
 
             // Loop through rows from the database result set
             while (rs.next()) {
+                int id = rs.getInt("Id");
                 String title = rs.getString("Movie_Title");
                 BigDecimal imdb = rs.getBigDecimal("IMDB_Rating");
                 double imdbRating = imdb.doubleValue();
@@ -66,7 +72,7 @@ public class MovieDAO implements IMovieDataAccess {
                 int year = rs.getInt("Movie_Year");
 
 
-                Movie movie = new Movie(title, imdbRating, personal, filePath, year);
+                Movie movie = new Movie(id, title, imdbRating, personal, filePath, year);
                 allMovies.add(movie);
             }
 

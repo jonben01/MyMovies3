@@ -24,4 +24,8 @@ public class CategoryManager {
         ArrayList<Category> categories = categoryDAO.getAllCategories();
         return categories;
     }
+
+    public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
+        categoryDAO.addCategoryToMovie(movieId, categoryId);
+    }
 }

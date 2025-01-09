@@ -26,4 +26,8 @@ public class CategoryModel {
 
     private void DeleteCategory(String selectedItem) {
     }
+
+    public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
+        categoryManager.addCategoryToMovie(movieId, categoryId);
+    }
 }
