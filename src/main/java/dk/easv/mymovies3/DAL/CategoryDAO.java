@@ -1,12 +1,10 @@
 package dk.easv.mymovies3.DAL;
 
 import dk.easv.mymovies3.BE.Category;
-import dk.easv.mymovies3.BE.Movie;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class CategoryDAO implements ICategoryDataAccess {
     private DBConnector connector;
@@ -47,9 +45,35 @@ public class CategoryDAO implements ICategoryDataAccess {
         }
     }
 
-    @Override
-    public void deleteCategory (Category category) throws SQLException {
+    /*@Override
+    public ArrayList<Category> getAllCategoriesJun() throws SQLException {
+        ArrayList<Category> allCategoriesJun = new ArrayList<>();
+        try (Connection conn = connector.getConnection();
+             Statement stmt = conn.createStatement()) {
 
+            String sql = "SELECT Movie_Id, Category_Id FROM CatMov_Junction";
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int id = rs.getInt("Movie_Id");
+                String categoryName = rs.getString("Category_Id");
+                allCategoriesJun.add(new Category(id, categoryName));
+            }
+            return allCategoriesJun;
+        } catch (SQLException e) {
+            throw new SQLException("Could not get all categoriesJun from database", e);
+        }
+    }*/
+
+    @Override
+    public void deleteCategory(Category category) throws SQLException {
+        try (Connection conn = connector.getConnection();
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM dbo.Category WHERE Id = ?")) {
+            ps.setInt(1, category.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Could not delete category: " + category.getCategoryName(), e);
+        }
     }
 
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {

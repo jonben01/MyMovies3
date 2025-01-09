@@ -1,6 +1,8 @@
 package dk.easv.mymovies3.GUI.Controllers;
-
+import org.controlsfx.control.NotificationPane;
+import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BE.Movie;
+import dk.easv.mymovies3.GUI.Models.CategoryModel;
 import dk.easv.mymovies3.GUI.Models.MovieModel;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.event.ActionEvent;
@@ -23,9 +25,12 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
     private MovieModel movieModel;
+    private CategoryModel categoryModel;
 
     @FXML
     private TableView<Movie> tblMovies;
+
+
 
     @FXML
     private TableColumn<Movie, String> colTitle;
@@ -41,6 +46,16 @@ public class MainController implements Initializable {
 
     @FXML
     private TableColumn<Movie, String> colCategory;
+
+
+
+
+
+
+
+
+
+
 
 
     public void handleAddMovie(ActionEvent actionEvent) {
@@ -67,32 +82,33 @@ public class MainController implements Initializable {
     }
 
     private void setupTableViews() {
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("movieTitle"));
+        colIMDB.setCellValueFactory(new PropertyValueFactory<>("imdbRating"));
+        colPersonalRating.setCellValueFactory(new PropertyValueFactory<>("personalRating"));
+        colYear.setCellValueFactory(new PropertyValueFactory<>("movieYear"));
 
+        colCategory.setCellValueFactory(data -> {
+            Movie movie = data.getValue();
+            StringBuilder categories = new StringBuilder();
+            for (Category category : movie.getCategories()) {
+                if (categories.length() > 0) {
+                    categories.append(", ");
+                }
+                categories.append(category.getCategoryName());
+            }
+            return new ReadOnlyStringWrapper(categories.toString());
+        });
 
-        // TableView columns setup
-
-
-            colTitle.setCellValueFactory(new PropertyValueFactory<>("movieTitle"));
-            colIMDB.setCellValueFactory(new PropertyValueFactory<>("imdbRating"));
-            colPersonalRating.setCellValueFactory(new PropertyValueFactory<>("personalRating"));
-            colYear.setCellValueFactory(new PropertyValueFactory<>("movieYear"));
-            
-
-
-            tblMovies.setItems(movieModel.getObservableMovies());
-
-
-
-
-
-
+        tblMovies.setItems(movieModel.getObservableMovies());
     }
+
 
 
 
     public MainController() throws Exception {
 
             movieModel = new MovieModel();
+
 
     }
 

@@ -1,5 +1,8 @@
 package dk.easv.mymovies3.BE;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Movie {
 
     private int id;
@@ -8,6 +11,11 @@ public class Movie {
     private Integer personalRating;
     private String filePath;
     private int movieYear;
+
+    private List<Category> categories;
+
+
+
 
     public int getId() {return id;}
     public void setId(int id) {this.id = id;}
@@ -27,20 +35,37 @@ public class Movie {
     public int getMovieYear() {return movieYear;}
     public void setMovieYear(int movieYear) {this.movieYear = movieYear;}
 
+    public List<Category> getCategories() {return categories;}
+    public void setCategories(List<Category> categories) {this.categories = categories;}
+
     public Movie(String movieTitle, Double imdbRating, Integer personalRating, String filePath, int movieYear) {
         this.movieTitle = movieTitle;
         this.imdbRating = imdbRating;
         this.personalRating = personalRating;
         this.filePath = filePath;
         this.movieYear = movieYear;
+        
     }
 
-    public Movie(int id, String movieTitle, Double imdbRating, Integer personalRating, String filePath, int movieYear) {
+    public Movie(String movieTitle, Double imdbRating, Integer personalRating, String filePath, int movieYear, List<Category> categories) {
+        this.movieTitle = movieTitle;
+        this.imdbRating = imdbRating;
+        this.personalRating = personalRating;
+        this.filePath = filePath;
+        this.movieYear = movieYear;
+        this.categories = categories;
+    }
+
+    public Movie(int id, String movieTitle, Double imdbRating, Integer personalRating, String filePath, int movieYear, List<Category> categories) {
         this.id = id;
         this.movieTitle = movieTitle;
         this.imdbRating = imdbRating;
         this.personalRating = personalRating;
         this.filePath = filePath;
         this.movieYear = movieYear;
+        this.categories = categories;
     }
+
+
+
 }

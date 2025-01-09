@@ -20,12 +20,22 @@ public class CategoryManager {
         return category;
     }
 
-    public ArrayList<Category> GetAllCategories() throws SQLException {
+    public ArrayList<Category> getAllCategories() throws SQLException {
         ArrayList<Category> categories = categoryDAO.getAllCategories();
         return categories;
     }
 
+    /*public ArrayList<Category> getAllCategoriesJun() throws SQLException {
+        ArrayList<Category> categoriesJun = categoryDAO.getAllCategoriesJun();
+        return categoriesJun;
+    }*/
+
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
         categoryDAO.addCategoryToMovie(movieId, categoryId);
+    }
+
+    public Category DeleteCategory(Category category) throws SQLException {
+        categoryDAO.deleteCategory(category);
+        return category;
     }
 }

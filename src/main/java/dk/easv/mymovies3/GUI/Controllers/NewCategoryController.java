@@ -4,18 +4,20 @@ import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.GUI.Models.CategoryModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class NewCategoryController {
     CategoryModel categoryModel;
     @FXML
     private TextField txtCategory;
     @FXML
-    private ListView listCategory;
+    private ListView<Category> listCategory;
 
     public NewCategoryController() throws IOException, SQLException {
         categoryModel = new CategoryModel();
@@ -37,11 +39,14 @@ public class NewCategoryController {
     }
 
     @FXML
-    private void handleDeleteCategory(ActionEvent actionEvent) {
+    private void handleDeleteCategory(ActionEvent actionEvent) throws SQLException {
 
-        if(listCategory.getSelectionModel().getSelectedItem() != null) {
+        if (listCategory.getSelectionModel().getSelectedItem() != null) {
             // TODO: Implement this shit..
+            Category category = listCategory.getSelectionModel().getSelectedItem();
+            categoryModel.DeleteCategory(category);
         }
+        UpdateCategories();
     }
 
     private void UpdateCategories() throws SQLException {
@@ -49,7 +54,18 @@ public class NewCategoryController {
             listCategory.getItems().clear();
         }
         for(Category category : categoryModel.GetAllCategories()) {
-            listCategory.getItems().add(category.getCategoryName());
+            listCategory.getItems().add(category);
         }
+        listCategory.setCellFactory(param -> new ListCell<Category>() {
+            @Override
+            protected void updateItem(Category item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getCategoryName());
+                }
+            }
+        });
     }
 }
