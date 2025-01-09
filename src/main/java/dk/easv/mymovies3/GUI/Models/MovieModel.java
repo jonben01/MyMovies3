@@ -49,7 +49,14 @@ public class MovieModel {
         return null;
     }
 
-    public void deleteMovie(Movie movieToBeDeleted) {
+    public void deleteMovie(Movie movieToBeDeleted) throws Exception {
+        movieManager.DeleteMovie(movieToBeDeleted);
+        UpdateList();
+    }
+
+    public void UpdateList() throws Exception {
+        moviesToBeViewed.clear();
+        moviesToBeViewed.addAll(movieManager.getAllMovies());
     }
 
 //TODO implement this
