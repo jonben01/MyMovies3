@@ -34,7 +34,8 @@ public class CategoryModel {
            return categories;
     }
 
-    private void DeleteCategory(String selectedItem) {
+    public void DeleteCategory(Category category) throws SQLException {
+            Category deletedCategory = categoryManager.DeleteCategory(category);
     }
 
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {

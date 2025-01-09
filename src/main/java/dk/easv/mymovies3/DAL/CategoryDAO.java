@@ -66,8 +66,14 @@ public class CategoryDAO implements ICategoryDataAccess {
     }*/
 
     @Override
-    public void deleteCategory (Category category) throws SQLException {
-
+    public void deleteCategory(Category category) throws SQLException {
+        try (Connection conn = connector.getConnection();
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM dbo.Category WHERE Id = ?")) {
+            ps.setInt(1, category.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Could not delete category: " + category.getCategoryName(), e);
+        }
     }
 
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {

@@ -33,4 +33,9 @@ public class CategoryManager {
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
         categoryDAO.addCategoryToMovie(movieId, categoryId);
     }
+
+    public Category DeleteCategory(Category category) throws SQLException {
+        categoryDAO.deleteCategory(category);
+        return category;
+    }
 }
