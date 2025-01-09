@@ -121,6 +121,13 @@ public class MovieDAO implements IMovieDataAccess {
 
     @Override
     public void deleteMovie(Movie movie) throws SQLException {
-
+        try (Connection conn = connector.getConnection();
+        PreparedStatement ps = conn.prepareStatement("DELETE FROM dbo.Movie WHERE Id = ?")) {
+            ps.setInt(1, movie.getId());
+            ps.executeUpdate();
+        } catch(SQLException ex){
+            ex.printStackTrace();
+            throw new SQLException("Could not remove movie from database.", ex);
+    }
     }
 }

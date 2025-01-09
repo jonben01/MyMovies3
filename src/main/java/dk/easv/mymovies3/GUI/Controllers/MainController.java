@@ -58,7 +58,16 @@ public class MainController implements Initializable {
     public void handleEditMovie(ActionEvent actionEvent) {
     }
 
-    public void handleDeleteMovie(ActionEvent actionEvent) {
+    public void handleDeleteMovie(ActionEvent actionEvent) throws Exception {
+        if(tblMovies.getSelectionModel().getSelectedItem() == null)
+        {
+            alertMethod("Please select a movie before deleting!", Alert.AlertType.WARNING);
+        }
+        else
+        {
+            movieModel.deleteMovie(tblMovies.getSelectionModel().getSelectedItem());
+            tblMovies.refresh();
+        }
     }
 
     private void setupTableViews() {

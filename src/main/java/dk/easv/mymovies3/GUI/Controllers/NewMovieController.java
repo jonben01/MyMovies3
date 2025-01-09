@@ -61,7 +61,7 @@ public class NewMovieController implements Initializable {
         }
     }
 
-    public void handleAddMovie(ActionEvent actionEvent) throws SQLException, IOException {
+    public void handleAddMovie(ActionEvent actionEvent) throws Exception {
         //TODO make this better later
         if (txtFilePath.getText() == null || txtFilePath.getText().isEmpty()
                 || txtMovieYear.getText() == null || txtMovieYear.getText().isEmpty()

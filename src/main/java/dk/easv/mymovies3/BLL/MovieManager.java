@@ -23,9 +23,14 @@ public class MovieManager {
             return movieDAO.getAllMovies();
     }
 
-            //TODO IMPLEMENT THIS
+    //TODO IMPLEMENT THIS
     public Movie createMovie(Movie movie) throws SQLException {
         movieDAO.createMovie(movie);
+        return movie;
+    }
+
+    public Movie DeleteMovie(Movie movie) throws SQLException {
+        movieDAO.deleteMovie(movie);
         return movie;
     }
 }
