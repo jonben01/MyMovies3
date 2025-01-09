@@ -105,6 +105,7 @@ public class MainController implements Initializable {
 
 
 
+
     public MainController() throws Exception {
 
             movieModel = new MovieModel();

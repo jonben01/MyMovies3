@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MovieDAO implements IMovieDataAccess {
 
@@ -47,15 +49,15 @@ public class MovieDAO implements IMovieDataAccess {
     }
 
     public List<Movie> getAllMovies() throws Exception {
-        ArrayList<Movie> allMovies = new ArrayList<>();
+        Map<Integer, Movie> movieMap = new HashMap<>();
 
         try (Connection conn = connector.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, m.Movie_Year, c.Category_Name " +
+            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, m.Movie_Year, c.Id as Category_Id, c.Category_Name " +
                     "FROM Movie m " +
-                    "JOIN CatMov_Junction cmj ON m.Id = cmj.Movie_Id " +
-                    "JOIN Category c ON cmj.Category_Id = c.Id";
+                    "LEFT JOIN CatMov_Junction cmj ON m.Id = cmj.Movie_Id " +
+                    "LEFT JOIN Category c ON cmj.Category_Id = c.Id";
 
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -67,25 +69,28 @@ public class MovieDAO implements IMovieDataAccess {
                 int personal = rs.getInt("Personal_Rating");
                 String filePath = rs.getString("File_Path");
                 int year = rs.getInt("Movie_Year");
-                List<Category> categories = getCategoriesForMovie(id);
 
-                Movie movie = new Movie(id, title, imdbRating, personal, filePath, year, categories);
-                allMovies.add(movie);
+                Movie movie = movieMap.get(id);
+                if (movie == null) {
+                    movie = new Movie(id, title, imdbRating, personal, filePath, year, new ArrayList<>());
+                    movieMap.put(id, movie);
+                }
+
+                int categoryId = rs.getInt("Category_Id");
+                String categoryName = rs.getString("Category_Name");
+                if (categoryId > 0 && categoryName != null) {
+                    movie.getCategories().add(new Category(categoryId, categoryName));
+                }
             }
 
-            // Load categories for each movie
-            for (Movie movie : allMovies) {
-                List<Category> categories = getCategoriesForMovie(movie.getId());
-                movie.setCategories(categories);
-            }
-
-            return allMovies;
+            return new ArrayList<>(movieMap.values());
 
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not get movies from database", ex);
         }
     }
+
 
     private List<Category> getCategoriesForMovie(int movieId) throws SQLException {
         List<Category> categories = new ArrayList<>();
