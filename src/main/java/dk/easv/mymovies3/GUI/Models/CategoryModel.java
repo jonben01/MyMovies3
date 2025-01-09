@@ -2,6 +2,8 @@ package dk.easv.mymovies3.GUI.Models;
 
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BLL.CategoryManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,9 +12,17 @@ import java.util.ArrayList;
 public class CategoryModel {
         CategoryManager categoryManager;
 
-        public CategoryModel() throws IOException {
+   // private ObservableList<Category> categoriesToBeViewed;
+
+        public CategoryModel() throws IOException, SQLException {
             categoryManager = new CategoryManager();
+            /*categoriesToBeViewed = FXCollections.observableArrayList();
+            categoriesToBeViewed.addAll(categoryManager.getAllCategoriesJun());*/
         }
+
+    /*public ObservableList<Category> getObservableCategories() {
+        return categoriesToBeViewed;
+    }*/
 
 
     public void CreateCategory(Category category) throws SQLException {
@@ -20,7 +30,7 @@ public class CategoryModel {
     }
 
     public ArrayList<Category> GetAllCategories() throws SQLException {
-           ArrayList<Category> categories = categoryManager.GetAllCategories();
+           ArrayList<Category> categories = categoryManager.getAllCategories();
            return categories;
     }
 

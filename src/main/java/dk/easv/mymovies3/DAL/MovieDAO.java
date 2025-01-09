@@ -1,6 +1,7 @@
 package dk.easv.mymovies3.DAL;
 
 
+import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BE.Movie;
 
 import java.io.IOException;
@@ -51,14 +52,13 @@ public class MovieDAO implements IMovieDataAccess {
         try (Connection conn = connector.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, m.Movie_Year " +
+            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, m.Movie_Year, c.Category_Name " +
                     "FROM Movie m " +
                     "JOIN CatMov_Junction cmj ON m.Id = cmj.Movie_Id " +
                     "JOIN Category c ON cmj.Category_Id = c.Id";
 
             ResultSet rs = stmt.executeQuery(sql);
 
-            // Loop through rows from the database result set
             while (rs.next()) {
                 int id = rs.getInt("Id");
                 String title = rs.getString("Movie_Title");
@@ -67,14 +67,18 @@ public class MovieDAO implements IMovieDataAccess {
                 int personal = rs.getInt("Personal_Rating");
                 String filePath = rs.getString("File_Path");
                 int year = rs.getInt("Movie_Year");
+                List<Category> categories = getCategoriesForMovie(id);
 
-
-                Movie movie = new Movie(id, title, imdbRating, personal, filePath, year);
+                Movie movie = new Movie(id, title, imdbRating, personal, filePath, year, categories);
                 allMovies.add(movie);
             }
 
-            // Debugging: print the number of movies loaded
-            System.out.println("Movies from database: " + allMovies.size());
+            // Load categories for each movie
+            for (Movie movie : allMovies) {
+                List<Category> categories = getCategoriesForMovie(movie.getId());
+                movie.setCategories(categories);
+            }
+
             return allMovies;
 
         } catch (SQLException ex) {
@@ -82,6 +86,27 @@ public class MovieDAO implements IMovieDataAccess {
             throw new Exception("Could not get movies from database", ex);
         }
     }
+
+    private List<Category> getCategoriesForMovie(int movieId) throws SQLException {
+        List<Category> categories = new ArrayList<>();
+
+        String sql = "SELECT c.Id, c.Category_Name FROM Category c " +
+                "JOIN CatMov_Junction cmj ON c.Id = cmj.Category_Id " +
+                "WHERE cmj.Movie_Id = ?";
+        try (Connection conn = connector.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, movieId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("Id");
+                String categoryName = rs.getString("Category_Name");
+                categories.add(new Category(id, categoryName));
+            }
+        }
+
+        return categories;
+    }
+
 
 
     @Override
