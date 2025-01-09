@@ -102,7 +102,7 @@ public class NewMovieController implements Initializable {
         String title = txtTitle.getText();
         //TODO not used rn, because FileAlreadyExists isnt handled yet. fix this later
         int year = Integer.parseInt(txtMovieYear.getText());
-        String destinationDir = "MyMovies3/movies";
+        String destinationDir = "src/main/resources/movies";
         Path destinationPath = Paths.get(destinationDir, new File(txtFilePath.getText()).getName());
 
         try {
@@ -121,8 +121,7 @@ public class NewMovieController implements Initializable {
             }
         }
 
-        //TODO newFilePath MUST be changed to songDestinationPath, when fileAlreadyExists is handled.
-        String newFilePath = txtFilePath.getText();
+        String newFilePath = destinationPath.toString();
         Movie newMovie = new Movie(title, imdbRating, rating, newFilePath, year);
         movieModel.createMovie(newMovie);
 
