@@ -42,6 +42,8 @@ public class MainController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newMovieView.fxml"));
             Parent root = loader.load();
+            NewMovieController controller = loader.getController();
+            controller.setMovieModel(movieModel);
 
             Stage stage = new Stage();
             stage.setTitle("New Movie");

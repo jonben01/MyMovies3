@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -46,7 +47,6 @@ public class NewMovieController implements Initializable {
     private CategoryModel categoryModel;
 
     public NewMovieController() throws Exception {
-        movieModel = new MovieModel();
         categoryModel = new CategoryModel();
     }
 
@@ -122,9 +122,15 @@ public class NewMovieController implements Initializable {
         }
 
         String newFilePath = destinationPath.toString();
-        Movie newMovie = new Movie(title, imdbRating, rating, newFilePath, year);
-        movieModel.createMovie(newMovie);
+        ArrayList<Category> selectedCategories = new ArrayList<>();
+        for (Category category : allCategories) {
+            if (category.isSelected()) {
+                selectedCategories.add(category);
+            }
+            }
 
+        Movie newMovie = new Movie(title, imdbRating, rating, newFilePath, year, selectedCategories);
+        movieModel.createMovie(newMovie);
         setCategories(newMovie);
 
         Stage stage =(Stage) btnAddMovie.getScene().getWindow();
@@ -199,5 +205,9 @@ public class NewMovieController implements Initializable {
                 }
             }
         });
+    }
+
+    public void setMovieModel(MovieModel movieModel) {
+        this.movieModel = movieModel;
     }
 }
