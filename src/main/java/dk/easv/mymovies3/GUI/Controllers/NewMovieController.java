@@ -50,6 +50,7 @@ public class NewMovieController implements Initializable {
     }
 
     public void handleFileChooser(ActionEvent actionEvent) {
+
     }
 
     public void handleAddMovie(ActionEvent actionEvent) throws SQLException {

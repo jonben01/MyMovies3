@@ -40,10 +40,6 @@ public class CategoryDAO implements ICategoryDataAccess {
                 int id = rs.getInt("Id");
                 String categoryName = rs.getString("Category_Name");
                 allCategories.add(new Category(id, categoryName));
-                /* er nødt til at bruge id for junction table
-                allCategories.add(new Category(rs.getString("Category_Name")));
-                 */
-
             }
             return allCategories;
         } catch (SQLException e) {
