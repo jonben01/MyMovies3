@@ -104,7 +104,7 @@ public class MainController implements Initializable {
         Movie movieFile = tblMovies.getSelectionModel().getSelectedItem();
         File file = new File (movieFile.getFilePath());
         if (!file.exists()) {
-            //TODO delete the selected item in database??? WHY IS THERE IF THE FILE DOESNT EXIST
+            //TODO delete the selected item in database??? WHY IS IT THERE IF THE FILE DOESNT EXIST
             alertMethod("File doesnt exist, sorry", Alert.AlertType.INFORMATION);
             return;
         }
