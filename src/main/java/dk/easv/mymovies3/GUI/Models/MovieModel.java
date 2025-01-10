@@ -30,7 +30,6 @@ public class MovieModel {
     }
 
 
-
     public ObservableList<Movie> getObservableMovies() {
         return moviesToBeViewed;
     }
@@ -58,6 +57,22 @@ public class MovieModel {
         moviesToBeViewed.clear();
         moviesToBeViewed.addAll(movieManager.getAllMovies());
     }
+
+    public void updateMovie(Movie movie) throws Exception {
+        movieManager.updateMovie(movie);
+
+        for (Movie m : moviesToBeViewed) {
+            if (m.getId() == movie.getId()) {
+                m.setMovieTitle(movie.getMovieTitle());
+                m.setImdbRating(movie.getImdbRating());
+                m.setPersonalRating(movie.getPersonalRating());
+                m.setMovieYear(movie.getMovieYear());
+                m.setCategories(movie.getCategories());
+                break;
+            }
+        }
+    }
+
 
 //TODO implement this
 

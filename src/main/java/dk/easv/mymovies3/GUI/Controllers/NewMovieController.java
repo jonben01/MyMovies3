@@ -46,7 +46,12 @@ public class NewMovieController implements Initializable {
     private MovieModel movieModel;
     private CategoryModel categoryModel;
 
+    private boolean isUpdateMode;
+    private Movie movieToUpdate;
+
+
     public NewMovieController() throws Exception {
+        movieModel = new MovieModel();
         categoryModel = new CategoryModel();
     }
 
@@ -105,33 +110,51 @@ public class NewMovieController implements Initializable {
         String destinationDir = "src/main/resources/movies";
         Path destinationPath = Paths.get(destinationDir, new File(txtFilePath.getText()).getName());
 
-        try {
-            Files.copy(Paths.get(txtFilePath.getText()), destinationPath);
-        } catch (FileAlreadyExistsException e) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Error");
-            alert.setHeaderText("File already exists");
-            alert.setContentText("Replace existing file with new file?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK) {
-                Movie movieToBeDeleted = movieModel.getMovieByFilePath(destinationPath.toString());
-                if (movieToBeDeleted != null) {
-                    movieModel.deleteMovie(movieToBeDeleted);
+
+
+            try {
+                Files.copy(Paths.get(txtFilePath.getText()), destinationPath);
+            } catch (FileAlreadyExistsException e) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText("File already exists");
+                alert.setContentText("Replace existing file with new file?");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    Movie movieToBeDeleted = movieModel.getMovieByFilePath(destinationPath.toString());
+                    if (movieToBeDeleted != null) {
+                        movieModel.deleteMovie(movieToBeDeleted);
+                    }
                 }
             }
+
+            String newFilePath = destinationPath.toString();
+            ArrayList<Category> selectedCategories = new ArrayList<>();
+            for (Category category : allCategories) {
+                if (category.isSelected()) {
+                    selectedCategories.add(category);
+                }
+            }
+
+        if (isUpdateMode) {
+            // Update existing movie
+            movieToUpdate.setMovieTitle(title);
+            movieToUpdate.setImdbRating(imdbRating);
+            movieToUpdate.setPersonalRating(rating);
+            movieToUpdate.setMovieYear(year);
+            movieToUpdate.setFilePath(String.valueOf(destinationPath));
+
+            movieModel.updateMovie(movieToUpdate);
+            setCategories(movieToUpdate);
+
+            System.out.println("Movie updated successfully");
+        } else {
+
+            Movie newMovie = new Movie(title, imdbRating, rating, newFilePath, year, selectedCategories);
+            movieModel.createMovie(newMovie);
+            setCategories(newMovie);
         }
 
-        String newFilePath = destinationPath.toString();
-        ArrayList<Category> selectedCategories = new ArrayList<>();
-        for (Category category : allCategories) {
-            if (category.isSelected()) {
-                selectedCategories.add(category);
-            }
-            }
-
-        Movie newMovie = new Movie(title, imdbRating, rating, newFilePath, year, selectedCategories);
-        movieModel.createMovie(newMovie);
-        setCategories(newMovie);
 
         Stage stage =(Stage) btnAddMovie.getScene().getWindow();
         stage.close();
@@ -153,8 +176,7 @@ public class NewMovieController implements Initializable {
         alert.showAndWait();
     }
 
-    public void handleCancelMovie(ActionEvent actionEvent) {
-    }
+
 
     public void handleEditMovie(ActionEvent actionEvent) {
     }
@@ -210,4 +232,35 @@ public class NewMovieController implements Initializable {
     public void setMovieModel(MovieModel movieModel) {
         this.movieModel = movieModel;
     }
+
+    public void setMode(boolean isUpdateMode, Movie movieToUpdate) {
+        this.isUpdateMode = isUpdateMode;
+        this.movieToUpdate = movieToUpdate;
+
+        if (isUpdateMode) {
+            txtTitle.setText(movieToUpdate.getMovieTitle());
+            txtIMDBRating.setText(String.valueOf(movieToUpdate.getImdbRating()));
+            txtPersonalRating.setText(String.valueOf(movieToUpdate.getPersonalRating()));
+            txtMovieYear.setText(String.valueOf(movieToUpdate.getMovieYear()));
+            txtFilePath.setText(movieToUpdate.getFilePath());
+
+            for (Category category : movieToUpdate.getCategories()) {
+                for (Category item : lstCategories.getItems()) {
+                    if (item.getId() == category.getId()) {
+                        item.setSelected(true);
+                        break;
+                    }
+                }
+            }
+
+            btnAddMovie.setText("Update Movie");
+        } else {
+            btnAddMovie.setText("Add Movie");
+        }
+    }
+
+    public void handleCancelMovie(ActionEvent actionEvent) {
+        Stage stage = (Stage) btnCancelMovie.getScene().getWindow();
+        stage.close(); }
+
 }

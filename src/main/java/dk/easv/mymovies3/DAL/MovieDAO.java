@@ -92,6 +92,51 @@ public class MovieDAO implements IMovieDataAccess {
     }
 
 
+
+        @Override
+        public void updateMovie(Movie movie) throws Exception {
+            String sql = "UPDATE dbo.Movie SET Movie_Title = ?, IMDB_Rating = ?, Personal_Rating = ?, File_Path = ?, Movie_Year = ? WHERE Id = ?";
+
+            try (Connection conn = connector.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, movie.getMovieTitle());
+                stmt.setDouble(2, movie.getImdbRating());
+                stmt.setInt(3, movie.getPersonalRating());
+                stmt.setString(4, movie.getFilePath());
+                stmt.setInt(5, movie.getMovieYear());
+                stmt.setInt(6, movie.getId());
+
+                stmt.executeUpdate();
+
+                // Update categories
+                updateMovieCategories(conn, movie);
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                throw new Exception("Could not update movie", ex);
+            }
+        }
+
+        public void updateMovieCategories(Connection conn, Movie movie) throws SQLException {
+            String deleteSql = "DELETE FROM CatMov_Junction WHERE Movie_Id = ?";
+            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+                deleteStmt.setInt(1, movie.getId());
+                deleteStmt.executeUpdate();
+            }
+
+            String insertSql = "INSERT INTO CatMov_Junction (Movie_Id, Category_Id) VALUES (?, ?)";
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                for (Category category : movie.getCategories()) {
+                    insertStmt.setInt(1, movie.getId());
+                    insertStmt.setInt(2, category.getId());
+                    insertStmt.executeUpdate();
+                }
+            }
+        }
+
+
+
+
     private List<Category> getCategoriesForMovie(int movieId) throws SQLException {
         List<Category> categories = new ArrayList<>();
 
@@ -112,12 +157,6 @@ public class MovieDAO implements IMovieDataAccess {
         return categories;
     }
 
-
-
-    @Override
-    public void updateMovie(Movie movie) throws SQLException {
-
-    }
 
     @Override
     public void deleteMovie(Movie movie) throws SQLException {

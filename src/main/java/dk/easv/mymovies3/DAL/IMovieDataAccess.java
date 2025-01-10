@@ -12,7 +12,7 @@ public interface IMovieDataAccess {
 
     List<Movie> getAllMovies () throws Exception;
 
-    void updateMovie (Movie movie) throws SQLException;
+    void updateMovie (Movie movie) throws Exception;
 
     void deleteMovie (Movie movie) throws SQLException;
 

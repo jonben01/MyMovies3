@@ -44,6 +44,7 @@ public class MainController implements Initializable {
             Parent root = loader.load();
             NewMovieController controller = loader.getController();
             controller.setMovieModel(movieModel);
+            controller.setMode(false, null); // Set to create mode
 
             Stage stage = new Stage();
             stage.setTitle("New Movie");
@@ -58,7 +59,30 @@ public class MainController implements Initializable {
     }
 
     public void handleEditMovie(ActionEvent actionEvent) {
+        Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
+        if (selectedMovie == null) {
+            alertMethod("Please select a movie before editing!", Alert.AlertType.INFORMATION);
+        } else {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newMovieView.fxml"));
+                Parent root = loader.load();
+
+                NewMovieController controller = loader.getController();
+                controller.setMovieModel(movieModel);
+                controller.setMode(true, selectedMovie); // Set to update mode
+
+                Stage stage = new Stage();
+                stage.setTitle("Edit Movie");
+                stage.setResizable(false);
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
+
 
     public void handleDeleteMovie(ActionEvent actionEvent) throws Exception {
         if(tblMovies.getSelectionModel().getSelectedItem() == null)
