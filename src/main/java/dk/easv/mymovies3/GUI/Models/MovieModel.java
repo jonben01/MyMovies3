@@ -68,7 +68,9 @@ public class MovieModel {
                 m.setPersonalRating(movie.getPersonalRating());
                 m.setMovieYear(movie.getMovieYear());
                 m.setCategories(movie.getCategories());
+                UpdateList();
                 break;
+
             }
         }
     }

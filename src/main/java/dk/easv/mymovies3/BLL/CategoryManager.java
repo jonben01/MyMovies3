@@ -38,4 +38,8 @@ public class CategoryManager {
         categoryDAO.deleteCategory(category);
         return category;
     }
+
+    public void clearCategoriesForMovie(int movieId) throws SQLException {
+        categoryDAO.clearCategoriesForMovie(movieId);
+    }
 }

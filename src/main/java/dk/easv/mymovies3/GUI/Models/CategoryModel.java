@@ -41,4 +41,8 @@ public class CategoryModel {
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
         categoryManager.addCategoryToMovie(movieId, categoryId);
     }
+
+    public void clearCategoriesForMovie(int movieId) throws SQLException {
+        categoryManager.clearCategoriesForMovie(movieId);
+    }
 }

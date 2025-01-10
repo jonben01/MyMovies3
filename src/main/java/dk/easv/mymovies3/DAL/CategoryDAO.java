@@ -76,9 +76,20 @@ public class CategoryDAO implements ICategoryDataAccess {
         }
     }
 
+
+    public void clearCategoriesForMovie(int movieId) throws SQLException {
+        String deleteSql = "DELETE FROM dbo.CatMov_Junction WHERE Movie_Id = ?;";
+        try (Connection conn = connector.getConnection();
+        PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+            deleteStmt.setInt(1, movieId);
+            deleteStmt.executeUpdate();
+        }
+    }
+
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
         String sql = "INSERT INTO dbo.CatMov_Junction (Movie_Id, Category_Id) " + "VALUES(?, ?);";
-        try (Connection connection = connector.getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = connector.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, movieId);
             ps.setInt(2, categoryId);
             ps.executeUpdate();

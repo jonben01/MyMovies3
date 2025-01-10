@@ -147,7 +147,9 @@ public class NewMovieController implements Initializable {
             movieModel.updateMovie(movieToUpdate);
             setCategories(movieToUpdate);
 
-            System.out.println("Movie updated successfully");
+
+
+
         } else {
 
             Movie newMovie = new Movie(title, imdbRating, rating, newFilePath, year, selectedCategories);
@@ -161,6 +163,10 @@ public class NewMovieController implements Initializable {
     }
 
     private void setCategories(Movie movie) throws SQLException {
+
+        //Clear existing categories
+        categoryModel.clearCategoriesForMovie(movie.getId());
+
         for (Category category : allCategories) {
             if (category.isSelected()) {
                 categoryModel.addCategoryToMovie(movie.getId(), category.getId());
