@@ -29,7 +29,7 @@ public class MovieDAO implements IMovieDataAccess {
             ps.setString(1, movie.getMovieTitle());
             ps.setDouble(2, movie.getImdbRating());
             if (movie.getPersonalRating() != null) {
-                ps.setInt(3, movie.getPersonalRating());
+                ps.setDouble(3, movie.getPersonalRating());
             } else {
                 ps.setNull(3, Types.DECIMAL);
             }
@@ -66,7 +66,7 @@ public class MovieDAO implements IMovieDataAccess {
                 String title = rs.getString("Movie_Title");
                 BigDecimal imdb = rs.getBigDecimal("IMDB_Rating");
                 double imdbRating = imdb.doubleValue();
-                int personal = rs.getInt("Personal_Rating");
+                double personal = rs.getInt("Personal_Rating");
                 String filePath = rs.getString("File_Path");
                 int year = rs.getInt("Movie_Year");
 
@@ -101,7 +101,7 @@ public class MovieDAO implements IMovieDataAccess {
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, movie.getMovieTitle());
                 stmt.setDouble(2, movie.getImdbRating());
-                stmt.setInt(3, movie.getPersonalRating());
+                stmt.setDouble(3, movie.getPersonalRating());
                 stmt.setString(4, movie.getFilePath());
                 stmt.setInt(5, movie.getMovieYear());
                 stmt.setInt(6, movie.getId());
@@ -133,9 +133,6 @@ public class MovieDAO implements IMovieDataAccess {
                 }
             }
         }
-
-
-
 
     private List<Category> getCategoriesForMovie(int movieId) throws SQLException {
         List<Category> categories = new ArrayList<>();

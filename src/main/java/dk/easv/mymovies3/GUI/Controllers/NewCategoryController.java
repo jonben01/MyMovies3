@@ -10,7 +10,6 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class NewCategoryController {
     CategoryModel categoryModel;
@@ -32,7 +31,7 @@ public class NewCategoryController {
 
         if(txtCategory != null) {
             Category newCategory = new Category(txtCategory.getText());
-            categoryModel.CreateCategory(newCategory);
+            categoryModel.createCategory(newCategory);
             UpdateCategories();
 
         }
@@ -53,7 +52,7 @@ public class NewCategoryController {
         if(listCategory != null) {
             listCategory.getItems().clear();
         }
-        for(Category category : categoryModel.GetAllCategories()) {
+        for(Category category : categoryModel.getAllCategories()) {
             listCategory.getItems().add(category);
         }
         listCategory.setCellFactory(param -> new ListCell<Category>() {

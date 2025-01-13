@@ -8,6 +8,8 @@ import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
 
 public class MovieModel {
 
@@ -73,6 +75,12 @@ public class MovieModel {
 
             }
         }
+    }
+
+    public ObservableList<Movie> applyFilters(Set<String> selectedCategories,
+                                              Set<String> selectedImdbRatings,
+                                              Set<String> selectedPersonalRatings) throws Exception {
+        return movieManager.applyFilters(selectedCategories, selectedImdbRatings, selectedPersonalRatings);
     }
 
 

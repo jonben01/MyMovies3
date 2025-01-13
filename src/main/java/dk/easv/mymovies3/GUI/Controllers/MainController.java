@@ -1,6 +1,8 @@
 package dk.easv.mymovies3.GUI.Controllers;
-import javafx.scene.control.Alert;
-import org.controlsfx.control.NotificationPane;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.scene.control.*;
+import org.controlsfx.control.CheckTreeView;
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BE.Movie;
 import dk.easv.mymovies3.GUI.Models.CategoryModel;
@@ -12,9 +14,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,9 +23,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public class MainController implements Initializable {
+    @FXML private CheckTreeView<String> filterBox;
     private MovieModel movieModel;
     private CategoryModel categoryModel;
 
@@ -126,14 +129,110 @@ public class MainController implements Initializable {
     }
 
     public MainController() throws Exception {
-
+            categoryModel = new CategoryModel();
             movieModel = new MovieModel();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableViews();
+        try {
+            populateFilterBox();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        filterBox.getCheckModel().getCheckedItems().addListener((ListChangeListener<TreeItem<String>>) c -> {
+            while (c.next()) {
+                //TODO figure out if this runs well like this, what happens if you uncheck all at the same time?
+                //todo make better exception handling jesus christ
+                if (c.wasAdded() || c.wasRemoved()) {
+                    try {
+                        applyFilters();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
     }
+
+    //TODO make sure it updates when you add a new category.
+    public void populateFilterBox() throws SQLException {
+
+        List<String> allCategories = categoryModel.getAvailableCategories();
+
+
+        //root node for treeView, hidden.
+        CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Root");
+        root.setExpanded(true);
+
+        //adds a category node, and creates new checkboxes under it.
+        CheckBoxTreeItem<String> categoriesNode = new CheckBoxTreeItem<>("Categories");
+        for (String category : allCategories) {
+            categoriesNode.getChildren().add(new CheckBoxTreeItem<>(category));
+        }
+
+        //TODO make this not shit dude bro homie
+        CheckBoxTreeItem<String> imdbNode = new CheckBoxTreeItem<>("IMDB Rating");
+        imdbNode.getChildren().addAll(
+                new CheckBoxTreeItem<>("0.0 - 0.9"),
+                new CheckBoxTreeItem<>("1.0 - 1.9"),
+                new CheckBoxTreeItem<>("2.0 - 2.9"),
+                new CheckBoxTreeItem<>("3.0 - 3.9"),
+                new CheckBoxTreeItem<>("4.0 - 4.9"),
+                new CheckBoxTreeItem<>("5.0 - 5.9"),
+                new CheckBoxTreeItem<>("6.0 - 6.9"),
+                new CheckBoxTreeItem<>("7.0 - 7.9"),
+                new CheckBoxTreeItem<>("8.0 - 8.9"),
+                new CheckBoxTreeItem<>("9.0 - 10.0")
+        );
+        //TODO make this not shit dude bro homie
+        CheckBoxTreeItem<String> personalRatingNode = new CheckBoxTreeItem<>("Personal Rating");
+        personalRatingNode.getChildren().addAll(
+                new CheckBoxTreeItem<>("0.0 - 0.9"),
+                new CheckBoxTreeItem<>("1.0 - 1.9"),
+                new CheckBoxTreeItem<>("2.0 - 2.9"),
+                new CheckBoxTreeItem<>("3.0 - 3.9"),
+                new CheckBoxTreeItem<>("4.0 - 4.9"),
+                new CheckBoxTreeItem<>("5.0 - 5.9"),
+                new CheckBoxTreeItem<>("6.0 - 6.9"),
+                new CheckBoxTreeItem<>("7.0 - 7.9"),
+                new CheckBoxTreeItem<>("8.0 - 8.9"),
+                new CheckBoxTreeItem<>("9.0 - 10.0")
+        );
+        root.getChildren().addAll(categoriesNode, imdbNode, personalRatingNode);
+        //sets the root of the treeView and hides it.
+        filterBox.setRoot(root);
+        filterBox.setShowRoot(false);
+    }
+
+    public void applyFilters() throws Exception {
+        List<TreeItem<String>> checkedItems = filterBox.getCheckModel().getCheckedItems();
+
+        Set<String> selectedCategories = new HashSet<>();
+        Set<String> selectedImdbRange = new HashSet<>();
+        Set<String> selectedPersonalRating = new HashSet<>();
+
+        for (TreeItem<String> item : checkedItems) {
+            TreeItem<String> parent = item.getParent();
+
+            if (parent != null) {
+                String parentValue = parent.getValue();
+                if ("Categories".equals(parentValue)) {
+                    selectedCategories.add(item.getValue());
+                } else if ("IMDB Rating".equals(parentValue)) {
+                    selectedImdbRange.add(item.getValue());
+                } else if ("Personal Rating".equals(parentValue)) {
+                    selectedPersonalRating.add(item.getValue());
+                }
+            }
+        }
+        //TODO should probably handle this in moviemodel and just change moviesToBeViewed : )) )) ) ) ) ) : :)):):):)::):)
+        ObservableList<Movie> filteredList = movieModel.applyFilters(selectedCategories, selectedImdbRange, selectedPersonalRating);
+        tblMovies.setItems(filteredList);
+    }
+
+
 
     public void handlePlayMovie(ActionEvent actionEvent) {
         Movie movieFile = tblMovies.getSelectionModel().getSelectedItem();
