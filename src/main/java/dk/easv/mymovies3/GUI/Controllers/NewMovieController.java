@@ -191,8 +191,7 @@ public class NewMovieController implements Initializable {
 
 
 
-    public void handleEditMovie(ActionEvent actionEvent) {
-    }
+
 
     @FXML
     private void OnNewCategoryClick(ActionEvent actionEvent) {
@@ -268,7 +267,7 @@ public class NewMovieController implements Initializable {
                 }
             }
 
-            btnAddMovie.setText("Update Movie");
+            btnAddMovie.setText("Edit Movie");
         } else {
             btnAddMovie.setText("Add Movie");
         }
