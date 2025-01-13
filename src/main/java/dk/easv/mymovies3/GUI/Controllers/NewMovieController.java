@@ -151,14 +151,6 @@ public class NewMovieController implements Initializable {
             movieModel.updateMovie(movieToUpdate);
             setCategories(movieToUpdate);
 
-
-
-
-
-
-
-
-
         } else {
 
             Movie newMovie = new Movie(title, imdbRating, rating, newFilePath, year, selectedCategories);
@@ -240,7 +232,7 @@ public class NewMovieController implements Initializable {
                     setText(null);
                 } else {
                     checkBox.setText(category.getCategoryName());
-                    checkBox.setSelected(false);
+                    checkBox.setSelected(category.isSelected());
                     checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
                         category.setSelected(newValue);
                     });
@@ -259,16 +251,18 @@ public class NewMovieController implements Initializable {
         this.movieToUpdate = movieToUpdate;
 
         if (isUpdateMode) {
+            // Populate fields with the movie's current details
             txtTitle.setText(movieToUpdate.getMovieTitle());
             txtIMDBRating.setText(String.valueOf(movieToUpdate.getImdbRating()));
             txtPersonalRating.setText(String.valueOf(movieToUpdate.getPersonalRating()));
             txtMovieYear.setText(String.valueOf(movieToUpdate.getMovieYear()));
             txtFilePath.setText(movieToUpdate.getFilePath());
 
-            for (Category category : movieToUpdate.getCategories()) {
-                for (Category item : lstCategories.getItems()) {
-                    if (item.getId() == category.getId()) {
-                        item.setSelected(true);
+            // Match categories in the movie to those in the ListView
+            for (Category movieCategory : movieToUpdate.getCategories()) {
+                for (Category listViewCategory : lstCategories.getItems()) {
+                    if (movieCategory.getId() == listViewCategory.getId()) {
+                        listViewCategory.setSelected(true); // Mark category as selected
                         break;
                     }
                 }
@@ -279,6 +273,7 @@ public class NewMovieController implements Initializable {
             btnAddMovie.setText("Add Movie");
         }
     }
+
 
     public void handleCancelMovie(ActionEvent actionEvent) {
         Stage stage = (Stage) btnCancelMovie.getScene().getWindow();
