@@ -1,5 +1,6 @@
 package dk.easv.mymovies3.GUI.Models;
 
+import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BE.Movie;
 import dk.easv.mymovies3.BLL.MovieManager;
 import javafx.collections.FXCollections;
@@ -61,21 +62,17 @@ public class MovieModel {
     }
 
     public void updateMovie(Movie movie) throws Exception {
-        movieManager.updateMovie(movie);
+        movieManager.updateMovie(movie); // Update movie in the database
 
-        for (Movie m : moviesToBeViewed) {
-            if (m.getId() == movie.getId()) {
-                m.setMovieTitle(movie.getMovieTitle());
-                m.setImdbRating(movie.getImdbRating());
-                m.setPersonalRating(movie.getPersonalRating());
-                m.setMovieYear(movie.getMovieYear());
-                m.setCategories(movie.getCategories());
-                UpdateList();
+        for (int i = 0; i < moviesToBeViewed.size(); i++) {
+            if (moviesToBeViewed.get(i).getId() == movie.getId()) {
+                // Replace the old movie with the updated one
+                moviesToBeViewed.set(i, movie);
                 break;
-
             }
         }
     }
+
 
     public ObservableList<Movie> applyFilters(Set<String> selectedCategories,
                                               Set<String> selectedImdbRatings,

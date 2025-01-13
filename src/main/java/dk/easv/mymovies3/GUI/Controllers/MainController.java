@@ -120,6 +120,8 @@ public class MainController implements Initializable {
         tblMovies.setItems(movieModel.getObservableMovies());
     }
 
+
+
     public void alertMethod(String alertString, Alert.AlertType alertType) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Error");
@@ -136,6 +138,7 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableViews();
+
         try {
             populateFilterBox();
         } catch (SQLException e) {
@@ -253,5 +256,21 @@ public class MainController implements Initializable {
             }
         }
     }
+
+
+
+    public void updateMovieCategories(Movie updatedMovie) {
+        try {
+            movieModel.updateMovie(updatedMovie); // Update movie in model
+            tblMovies.refresh(); // Refresh the table view
+        } catch (Exception e) {
+        }
+    }
+
+
+
+
+
+
 }
 

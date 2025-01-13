@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -40,18 +41,23 @@ public class NewMovieController implements Initializable {
     @FXML public Button btnEditMovie;
     @FXML public ListView<Category> lstCategories = new ListView<>();
     private ObservableList<Category> allCategories = null;
+    private NewCategoryController newCategoryController;
 
 
     private MovieModel movieModel;
     private CategoryModel categoryModel;
+    private MainController controller;
 
     private boolean isUpdateMode;
     private Movie movieToUpdate;
+
+    @FXML private TableView<Movie> tblMovies;
 
 
     public NewMovieController() throws Exception {
         movieModel = new MovieModel();
         categoryModel = new CategoryModel();
+        controller = new MainController();
     }
 
     public void handleFileChooser(ActionEvent actionEvent) {
@@ -140,10 +146,15 @@ public class NewMovieController implements Initializable {
             movieToUpdate.setImdbRating(imdbRating);
             movieToUpdate.setPersonalRating(rating);
             movieToUpdate.setMovieYear(year);
-            movieToUpdate.setFilePath(String.valueOf(destinationPath));
+            movieToUpdate.setFilePath(newFilePath);
 
             movieModel.updateMovie(movieToUpdate);
             setCategories(movieToUpdate);
+
+
+
+
+
 
 
 
@@ -156,6 +167,7 @@ public class NewMovieController implements Initializable {
         }
 
 
+
         Stage stage =(Stage) btnAddMovie.getScene().getWindow();
         stage.close();
     }
@@ -165,11 +177,16 @@ public class NewMovieController implements Initializable {
         //Clear existing categories
         categoryModel.clearCategoriesForMovie(movie.getId());
 
+        List<Category> selectedCategories = new ArrayList<>();
         for (Category category : allCategories) {
             if (category.isSelected()) {
                 categoryModel.addCategoryToMovie(movie.getId(), category.getId());
+                selectedCategories.add(category);
             }
         }
+        // Update the movie's categories in the model
+        movie.setCategories(selectedCategories);
+        controller.updateMovieCategories(movie); // Notify MainController to refresh
     }
 
     public void alertMethod(String alertString, Alert.AlertType alertType) {
@@ -266,5 +283,7 @@ public class NewMovieController implements Initializable {
     public void handleCancelMovie(ActionEvent actionEvent) {
         Stage stage = (Stage) btnCancelMovie.getScene().getWindow();
         stage.close(); }
+
+
 
 }

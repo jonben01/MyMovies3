@@ -45,7 +45,7 @@ public class CategoryDAO implements ICategoryDataAccess {
         }
     }
 
-    /*@Override
+    @Override
     public ArrayList<Category> getAllCategoriesJun() throws SQLException {
         ArrayList<Category> allCategoriesJun = new ArrayList<>();
         try (Connection conn = connector.getConnection();
@@ -63,7 +63,7 @@ public class CategoryDAO implements ICategoryDataAccess {
         } catch (SQLException e) {
             throw new SQLException("Could not get all categoriesJun from database", e);
         }
-    }*/
+    }
 
     @Override
     public void deleteCategory(Category category) throws SQLException {

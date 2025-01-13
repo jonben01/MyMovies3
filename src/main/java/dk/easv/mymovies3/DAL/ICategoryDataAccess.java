@@ -13,7 +13,7 @@ public interface ICategoryDataAccess {
 
     List<Category> getAllCategories () throws SQLException;
 
-    //ArrayList<Category> getAllCategoriesJun() throws SQLException;
+    ArrayList<Category> getAllCategoriesJun() throws SQLException;
 
     void deleteCategory (Category category) throws SQLException;
 }

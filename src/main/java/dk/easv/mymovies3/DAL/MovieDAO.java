@@ -93,31 +93,44 @@ public class MovieDAO implements IMovieDataAccess {
 
 
 
-        @Override
-        public void updateMovie(Movie movie) throws Exception {
-            String sql = "UPDATE dbo.Movie SET Movie_Title = ?, IMDB_Rating = ?, Personal_Rating = ?, File_Path = ?, Movie_Year = ? WHERE Id = ?";
+    @Override
+    public void updateMovie(Movie movie) throws Exception {
+        String sql = "UPDATE dbo.Movie SET Movie_Title = ?, IMDB_Rating = ?, Personal_Rating = ?, File_Path = ?, Movie_Year = ? WHERE Id = ?";
+        try (Connection conn = connector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, movie.getMovieTitle());
+            stmt.setDouble(2, movie.getImdbRating());
+            stmt.setDouble(3, movie.getPersonalRating());
+            stmt.setString(4, movie.getFilePath());
+            stmt.setInt(5, movie.getMovieYear());
+            stmt.setInt(6, movie.getId());
+            stmt.executeUpdate();
 
-            try (Connection conn = connector.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, movie.getMovieTitle());
-                stmt.setDouble(2, movie.getImdbRating());
-                stmt.setDouble(3, movie.getPersonalRating());
-                stmt.setString(4, movie.getFilePath());
-                stmt.setInt(5, movie.getMovieYear());
-                stmt.setInt(6, movie.getId());
+            // Update categories in the junction table
+            updateMovieCategories(conn, movie);
 
-                stmt.executeUpdate();
+            // Refresh the categories in the Movie object
+            movie.setCategories(getCategoriesForMovie(movie.getId()));
+        }
+    }
 
-                // Update categories
-                updateMovieCategories(conn, movie);
-
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                throw new Exception("Could not update movie", ex);
+    private List<Category> getCategoriesForMovie(int movieId) throws SQLException {
+        List<Category> categories = new ArrayList<>();
+        String sql = "SELECT c.Id, c.Category_Name FROM Category c " +
+                "JOIN CatMov_Junction cmj ON c.Id = cmj.Category_Id WHERE cmj.Movie_Id = ?";
+        try (Connection conn = connector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, movieId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                categories.add(new Category(rs.getInt("Id"), rs.getString("Category_Name")));
             }
         }
+        return categories;
+    }
 
-        public void updateMovieCategories(Connection conn, Movie movie) throws SQLException {
+
+    public void updateMovieCategories(Connection conn, Movie movie) throws SQLException {
             String deleteSql = "DELETE FROM CatMov_Junction WHERE Movie_Id = ?";
             try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
                 deleteStmt.setInt(1, movie.getId());
@@ -134,25 +147,7 @@ public class MovieDAO implements IMovieDataAccess {
             }
         }
 
-    private List<Category> getCategoriesForMovie(int movieId) throws SQLException {
-        List<Category> categories = new ArrayList<>();
 
-        String sql = "SELECT c.Id, c.Category_Name FROM Category c " +
-                "JOIN CatMov_Junction cmj ON c.Id = cmj.Category_Id " +
-                "WHERE cmj.Movie_Id = ?";
-        try (Connection conn = connector.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, movieId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("Id");
-                String categoryName = rs.getString("Category_Name");
-                categories.add(new Category(id, categoryName));
-            }
-        }
-
-        return categories;
-    }
 
 
     @Override

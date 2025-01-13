@@ -48,7 +48,7 @@ public class NewCategoryController {
         UpdateCategories();
     }
 
-    private void UpdateCategories() throws SQLException {
+    public void UpdateCategories() throws SQLException {
         if(listCategory != null) {
             listCategory.getItems().clear();
         }
