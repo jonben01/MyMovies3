@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import org.controlsfx.control.CheckTreeView?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="722.0" prefWidth="1059.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.MainController">
    <children>
@@ -39,6 +40,7 @@
          <children>
             <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <children>
+                  <CheckTreeView fx:id="filterBox" minWidth="170.0" />
                   <TableView fx:id="tblMovies" maxHeight="900.0" maxWidth="1600.0" prefHeight="485.0" prefWidth="832.0" HBox.hgrow="SOMETIMES">
                     <columns>
                       <TableColumn fx:id="colTitle" prefWidth="165.0" text="Title" />

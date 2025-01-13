@@ -24,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -89,12 +88,13 @@ public class NewMovieController implements Initializable {
                 return;
             }
         }
-        Integer rating = null;
+        Double rating = null;
         if (!txtPersonalRating.getText().isEmpty()) {
             try {
-                rating = Integer.parseInt(txtPersonalRating.getText());
+                rating = Double.parseDouble(txtPersonalRating.getText());
                 if (rating > 10 || rating < 0) {
-                    alertMethod("Please enter a whole number between 0-10 for personal rating", Alert.AlertType.ERROR);
+
+                    alertMethod("Please enter a valid personal rating between 0 and 10", Alert.AlertType.ERROR);
                     return;
                 }
 
@@ -109,8 +109,6 @@ public class NewMovieController implements Initializable {
         int year = Integer.parseInt(txtMovieYear.getText());
         String destinationDir = "src/main/resources/movies";
         Path destinationPath = Paths.get(destinationDir, new File(txtFilePath.getText()).getName());
-
-
 
             try {
                 Files.copy(Paths.get(txtFilePath.getText()), destinationPath);
@@ -208,7 +206,7 @@ public class NewMovieController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            allCategories = FXCollections.observableArrayList(categoryModel.GetAllCategories());
+            allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
         } catch (SQLException e) {
             throw new RuntimeException("yikes - new movie controller, in initialize",e);
         }
