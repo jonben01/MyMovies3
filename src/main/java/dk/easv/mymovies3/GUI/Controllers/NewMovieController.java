@@ -71,16 +71,14 @@ public class NewMovieController implements Initializable {
         }
     }
 
+
+
     public void handleAddMovie(ActionEvent actionEvent) throws Exception {
-        //TODO make this better later
-        if (txtFilePath.getText() == null || txtFilePath.getText().isEmpty()
-                || txtMovieYear.getText() == null || txtMovieYear.getText().isEmpty()
-                || txtPersonalRating.getText() == null || txtPersonalRating.getText().isEmpty()
-                || txtIMDBRating.getText() == null || txtIMDBRating.getText().isEmpty()
-                || txtTitle.getText() == null || txtTitle.getText().isEmpty())  {
-            alertMethod("Please fill out all fields", Alert.AlertType.ERROR);
+
+        if(!validateFields()) {
             return;
         }
+
         Double imdbRating = null;
         if (!txtIMDBRating.getText().isEmpty()) {
             try {
@@ -94,11 +92,11 @@ public class NewMovieController implements Initializable {
                 return;
             }
         }
-        Double rating = null;
+        Double personalRating = null;
         if (!txtPersonalRating.getText().isEmpty()) {
             try {
-                rating = Double.parseDouble(txtPersonalRating.getText());
-                if (rating > 10 || rating < 0) {
+                personalRating = Double.parseDouble(txtPersonalRating.getText());
+                if (personalRating > 10 || personalRating < 0) {
 
                     alertMethod("Please enter a valid personal rating between 0 and 10", Alert.AlertType.ERROR);
                     return;
@@ -109,58 +107,93 @@ public class NewMovieController implements Initializable {
                 return;
             }
         }
-        //TODO extract below as a method later.
+
         String title = txtTitle.getText();
         int year = Integer.parseInt(txtMovieYear.getText());
-        String destinationDir = "src/main/resources/movies";
-        Path destinationPath = Paths.get(destinationDir, new File(txtFilePath.getText()).getName());
+        String newFilePath = handleFileCopy();
 
-            try {
-                Files.copy(Paths.get(txtFilePath.getText()), destinationPath);
-            } catch (FileAlreadyExistsException e) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Error");
-                alert.setHeaderText("File already exists");
-                alert.setContentText("Replace existing file with new file?");
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.get() == ButtonType.OK) {
-                    Movie movieToBeDeleted = movieModel.getMovieByFilePath(destinationPath.toString());
-                    if (movieToBeDeleted != null) {
-                        movieModel.deleteMovie(movieToBeDeleted);
-                    }
-                }
-            }
+        ArrayList<Category> selectedCategories = getSelectedCategories();
 
-            String newFilePath = destinationPath.toString();
-            ArrayList<Category> selectedCategories = new ArrayList<>();
-            for (Category category : allCategories) {
-                if (category.isSelected()) {
-                    selectedCategories.add(category);
-                }
-            }
 
         if (isUpdateMode) {
             // Update existing movie
-            movieToUpdate.setMovieTitle(title);
-            movieToUpdate.setImdbRating(imdbRating);
-            movieToUpdate.setPersonalRating(rating);
-            movieToUpdate.setMovieYear(year);
-            movieToUpdate.setFilePath(newFilePath);
-
-            movieModel.updateMovie(movieToUpdate);
-            setCategories(movieToUpdate);
+            updateMovie(title, imdbRating, personalRating, year, newFilePath, selectedCategories);
 
         } else {
+            createMovie(title, imdbRating, personalRating, year, newFilePath, selectedCategories);
 
-            Movie newMovie = new Movie(title, imdbRating, rating, newFilePath, year, selectedCategories);
-            movieModel.createMovie(newMovie);
-            setCategories(newMovie);
         }
-
-
 
         Stage stage =(Stage) btnAddMovie.getScene().getWindow();
         stage.close();
+    }
+
+    private boolean validateFields() {
+
+        if (txtFilePath.getText() == null || txtFilePath.getText().isEmpty()
+                || txtMovieYear.getText() == null || txtMovieYear.getText().isEmpty()
+                || txtPersonalRating.getText() == null || txtPersonalRating.getText().isEmpty()
+                || txtIMDBRating.getText() == null || txtIMDBRating.getText().isEmpty()
+                || txtTitle.getText() == null || txtTitle.getText().isEmpty())  {
+            alertMethod("Please fill out all fields", Alert.AlertType.ERROR);
+            return false;
+        }
+        return true;
+
+    }
+
+
+    private String handleFileCopy() throws Exception {
+
+        String destinationDir = "src/main/resources/movies";
+        Path destinationPath = Paths.get(destinationDir, new File(txtFilePath.getText()).getName());
+
+        try {
+            Files.copy(Paths.get(txtFilePath.getText()), destinationPath);
+        } catch (FileAlreadyExistsException e) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText("File already exists");
+            alert.setContentText("Replace existing file with new file?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                Movie movieToBeDeleted = movieModel.getMovieByFilePath(destinationPath.toString());
+                if (movieToBeDeleted != null) {
+                    movieModel.deleteMovie(movieToBeDeleted);
+                }
+            }
+        }
+        return destinationPath.toString();
+
+    }
+
+    private ArrayList<Category> getSelectedCategories() {
+
+        ArrayList<Category> selectedCategories = new ArrayList<>();
+
+        for (Category category : allCategories) {
+            if (category.isSelected()) {
+                selectedCategories.add(category);
+            }
+        }
+        return selectedCategories;
+    }
+
+    private void updateMovie(String title, Double imdbRating, Double personalRating, int year, String filePath, ArrayList<Category> selectedCategories) throws Exception {
+        movieToUpdate.setMovieTitle(title);
+        movieToUpdate.setImdbRating(imdbRating);
+        movieToUpdate.setPersonalRating(personalRating);
+        movieToUpdate.setMovieYear(year);
+        movieToUpdate.setFilePath(filePath);
+
+        movieModel.updateMovie(movieToUpdate);
+        setCategories(movieToUpdate);
+    }
+
+    private void createMovie(String title, Double imdbRating, Double personalRating, int year, String filePath, ArrayList<Category> selectedCategories) throws SQLException {
+        Movie newMovie = new Movie(title, imdbRating, personalRating, filePath, year, selectedCategories);
+        movieModel.createMovie(newMovie);
+        setCategories(newMovie);
     }
 
     private void setCategories(Movie movie) throws SQLException {

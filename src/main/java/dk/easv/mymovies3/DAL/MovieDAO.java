@@ -64,15 +64,19 @@ public class MovieDAO implements IMovieDataAccess {
             while (rs.next()) {
                 int id = rs.getInt("Id");
                 String title = rs.getString("Movie_Title");
+
                 BigDecimal imdb = rs.getBigDecimal("IMDB_Rating");
                 double imdbRating = imdb.doubleValue();
-                double personal = rs.getInt("Personal_Rating");
+
+                BigDecimal personal = rs.getBigDecimal("Personal_Rating");
+                double personalRating = personal.doubleValue();
+
                 String filePath = rs.getString("File_Path");
                 int year = rs.getInt("Movie_Year");
 
                 Movie movie = movieMap.get(id);
                 if (movie == null) {
-                    movie = new Movie(id, title, imdbRating, personal, filePath, year, new ArrayList<>());
+                    movie = new Movie(id, title, imdbRating, personalRating, filePath, year, new ArrayList<>());
                     movieMap.put(id, movie);
                 }
 
