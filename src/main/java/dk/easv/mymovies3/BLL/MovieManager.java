@@ -45,4 +45,8 @@ public class MovieManager {
                                               Set<String> selectedPersonalRatings) throws Exception {
         return movieFilter.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRatings, selectedPersonalRatings);
     }
+
+    public void setLastOpened(Movie movie) throws SQLException {
+        movieDAO.setLastOpened(movie);
+    }
 }

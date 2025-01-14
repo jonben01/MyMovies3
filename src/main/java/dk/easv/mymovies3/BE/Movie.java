@@ -1,7 +1,7 @@
 package dk.easv.mymovies3.BE;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 public class Movie {

@@ -7,6 +7,7 @@ import dk.easv.mymovies3.BE.Movie;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,8 @@ public class MovieDAO implements IMovieDataAccess {
         try (Connection conn = connector.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, m.Movie_Year, c.Id as Category_Id, c.Category_Name " +
+            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, " +
+                    "m.Movie_Year, c.Id as Category_Id, c.Category_Name, m.Last_Opened_Date " +
                     "FROM Movie m " +
                     "LEFT JOIN CatMov_Junction cmj ON m.Id = cmj.Movie_Id " +
                     "LEFT JOIN Category c ON cmj.Category_Id = c.Id";
@@ -73,10 +75,14 @@ public class MovieDAO implements IMovieDataAccess {
 
                 String filePath = rs.getString("File_Path");
                 int year = rs.getInt("Movie_Year");
+                Date lastOpened = rs.getDate("Last_Opened_Date");
 
                 Movie movie = movieMap.get(id);
                 if (movie == null) {
                     movie = new Movie(id, title, imdbRating, personalRating, filePath, year, new ArrayList<>());
+                    if (lastOpened != null) {
+                        movie.setLastOpenedDate(lastOpened);
+                    }
                     movieMap.put(id, movie);
                 }
 
@@ -95,7 +101,16 @@ public class MovieDAO implements IMovieDataAccess {
         }
     }
 
+    public void setLastOpened(Movie movie) throws SQLException {
+        String sql = "UPDATE Movie SET Last_Opened_Date = ? WHERE Id = ?";
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            Date lastOpened = Date.valueOf(LocalDate.now());
+            ps.setDate(1, lastOpened);
+            ps.setInt(2, movie.getId());
+            ps.executeUpdate();
+        }
+    }
 
     @Override
     public void updateMovie(Movie movie) throws Exception {
@@ -132,7 +147,6 @@ public class MovieDAO implements IMovieDataAccess {
         }
         return categories;
     }
-
 
     public void updateMovieCategories(Connection conn, Movie movie) throws SQLException {
             String deleteSql = "DELETE FROM CatMov_Junction WHERE Movie_Id = ?";

@@ -81,7 +81,9 @@ public class MovieModel {
         return movieManager.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRatings, selectedPersonalRatings);
     }
 
-
+    public void setLastOpened(Movie movie) throws SQLException {
+        movieManager.setLastOpened(movie);
+    }
 
 
 //TODO implement this

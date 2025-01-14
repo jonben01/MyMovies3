@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -22,11 +21,6 @@
                         <Insets top="10.0" />
                      </HBox.margin>
                   </TextField>
-                  <ComboBox prefHeight="25.0" prefWidth="228.0" promptText="Category stuff (Needs new library)">
-                     <HBox.margin>
-                        <Insets top="10.0" />
-                     </HBox.margin>
-                  </ComboBox>
                </children>
             </HBox>
          </children>

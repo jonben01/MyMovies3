@@ -28,7 +28,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
+import java.sql.Date;
 import java.util.List;
 
 public class MainController implements Initializable {
@@ -45,6 +48,78 @@ public class MainController implements Initializable {
     @FXML private TableColumn<Movie, String> colCategory;
 
     private PauseTransition searchPause;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        setupTableViews();
+
+        List<Movie> movies = movieModel.getObservableMovies();
+        List<Movie> oldMovies = new ArrayList();
+        for (Movie movie : movies) {
+            Date lastOpened = movie.getLastOpenedDate();
+            if (lastOpened != null) {
+                LocalDate date = lastOpened.toLocalDate();
+
+                if (date.isBefore(LocalDate.now().minusYears(2))) {
+                    oldMovies.add(movie);
+                }
+            }
+        }
+        if (!oldMovies.isEmpty()) {
+            StringBuilder content = new StringBuilder("The following movies are old and disliked: \n\n");
+            for (Movie movie : oldMovies) {
+                content.append(movie.getMovieTitle()).append("\n");
+            }
+
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete old and disliked movies?");
+            alert.setHeaderText(content.toString());
+            alert.setContentText("Would you like to delete them?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                for (Movie movie : oldMovies) {
+                    try {
+                        movieModel.deleteMovie(movie);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
+        try {
+            populateFilterBox();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        filterBox.getCheckModel().getCheckedItems().addListener((ListChangeListener<TreeItem<String>>) c -> {
+            while (c.next()) {
+                //TODO figure out if this runs well like this, what happens if you uncheck all at the same time?
+                //todo make better exception handling jesus christ
+                if (c.wasAdded() || c.wasRemoved()) {
+                    try {
+                        applyFiltersAndSearch();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        //workaround debouncer for smoother searching.
+        searchPause = new PauseTransition(Duration.millis(300));
+        searchPause.setOnFinished(event -> {
+            try {
+                applyFiltersAndSearch();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            searchPause.stop();
+            searchPause.playFromStart();
+        });
+    }
 
     public void handleAddMovie(ActionEvent actionEvent) {
         try {
@@ -122,6 +197,7 @@ public class MainController implements Initializable {
         });
 
         tblMovies.setItems(movieModel.getObservableMovies());
+
     }
 
     public Optional<ButtonType> alertMethod(String alertString, Alert.AlertType alertType) {
@@ -137,42 +213,6 @@ public class MainController implements Initializable {
             movieModel = new MovieModel();
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        setupTableViews();
-
-        try {
-            populateFilterBox();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        filterBox.getCheckModel().getCheckedItems().addListener((ListChangeListener<TreeItem<String>>) c -> {
-            while (c.next()) {
-                //TODO figure out if this runs well like this, what happens if you uncheck all at the same time?
-                //todo make better exception handling jesus christ
-                if (c.wasAdded() || c.wasRemoved()) {
-                    try {
-                        applyFiltersAndSearch();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
-        //workaround debouncer for smoother searching.
-        searchPause = new PauseTransition(Duration.millis(300));
-        searchPause.setOnFinished(event -> {
-            try {
-                applyFiltersAndSearch();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-            searchPause.stop();
-            searchPause.playFromStart();
-        });
-    }
 
     //TODO make sure it updates when you add a new category.
     public void populateFilterBox() throws SQLException {
@@ -269,6 +309,7 @@ public class MainController implements Initializable {
 
             try {
                 desktop.open(file);
+                movieModel.setLastOpened(movieFile);
             } catch (IOException e) {
                 throw new RuntimeException("oopsie woopsie",e);
             }
