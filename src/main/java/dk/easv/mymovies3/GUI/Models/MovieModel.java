@@ -74,11 +74,14 @@ public class MovieModel {
     }
 
 
-    public ObservableList<Movie> applyFilters(Set<String> selectedCategories,
+    public ObservableList<Movie> applyFiltersAndSearch(String searchQuery,
+                                              Set<String> selectedCategories,
                                               Set<String> selectedImdbRatings,
                                               Set<String> selectedPersonalRatings) throws Exception {
-        return movieManager.applyFilters(selectedCategories, selectedImdbRatings, selectedPersonalRatings);
+        return movieManager.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRatings, selectedPersonalRatings);
     }
+
+
 
 
 //TODO implement this

@@ -111,7 +111,6 @@ public class NewMovieController implements Initializable {
         }
         //TODO extract below as a method later.
         String title = txtTitle.getText();
-        //TODO not used rn, because FileAlreadyExists isnt handled yet. fix this later
         int year = Integer.parseInt(txtMovieYear.getText());
         String destinationDir = "src/main/resources/movies";
         Path destinationPath = Paths.get(destinationDir, new File(txtFilePath.getText()).getName());

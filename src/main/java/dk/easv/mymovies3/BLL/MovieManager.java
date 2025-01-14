@@ -2,6 +2,7 @@ package dk.easv.mymovies3.BLL;
 
 import dk.easv.mymovies3.BE.Movie;
 import dk.easv.mymovies3.DAL.MovieDAO;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
@@ -38,10 +39,10 @@ public class MovieManager {
         return movie;
     }
 
-    public ObservableList<Movie> applyFilters(Set<String> selectedCategories,
+    public ObservableList<Movie> applyFiltersAndSearch(String searchQuery,
+                                              Set<String> selectedCategories,
                                               Set<String> selectedImdbRatings,
                                               Set<String> selectedPersonalRatings) throws Exception {
-        return movieFilter.applyFilters(selectedCategories, selectedImdbRatings, selectedPersonalRatings);
+        return movieFilter.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRatings, selectedPersonalRatings);
     }
-
 }

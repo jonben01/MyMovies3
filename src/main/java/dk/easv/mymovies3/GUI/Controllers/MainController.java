@@ -1,7 +1,12 @@
 package dk.easv.mymovies3.GUI.Controllers;
+import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.util.Duration;
 import org.controlsfx.control.CheckTreeView;
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BE.Movie;
@@ -23,12 +28,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
 
 public class MainController implements Initializable {
+    @FXML private TextField txtSearch;
     @FXML private CheckTreeView<String> filterBox;
     private MovieModel movieModel;
     private CategoryModel categoryModel;
@@ -40,6 +44,7 @@ public class MainController implements Initializable {
     @FXML private TableColumn<Movie, Integer> colYear;
     @FXML private TableColumn<Movie, String> colCategory;
 
+    private PauseTransition searchPause;
 
     public void handleAddMovie(ActionEvent actionEvent) {
         try {
@@ -86,7 +91,6 @@ public class MainController implements Initializable {
         }
     }
 
-
     public void handleDeleteMovie(ActionEvent actionEvent) throws Exception {
         if(tblMovies.getSelectionModel().getSelectedItem() == null)
         {
@@ -120,14 +124,12 @@ public class MainController implements Initializable {
         tblMovies.setItems(movieModel.getObservableMovies());
     }
 
-
-
-    public void alertMethod(String alertString, Alert.AlertType alertType) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    public Optional<ButtonType> alertMethod(String alertString, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
         alert.setTitle("Error");
         alert.setHeaderText(null);
         alert.setContentText(alertString);
-        alert.showAndWait();
+        return alert.showAndWait();
     }
 
     public MainController() throws Exception {
@@ -150,12 +152,25 @@ public class MainController implements Initializable {
                 //todo make better exception handling jesus christ
                 if (c.wasAdded() || c.wasRemoved()) {
                     try {
-                        applyFilters();
+                        applyFiltersAndSearch();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
             }
+        });
+        //workaround debouncer for smoother searching.
+        searchPause = new PauseTransition(Duration.millis(300));
+        searchPause.setOnFinished(event -> {
+            try {
+                applyFiltersAndSearch();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            searchPause.stop();
+            searchPause.playFromStart();
         });
     }
 
@@ -163,7 +178,6 @@ public class MainController implements Initializable {
     public void populateFilterBox() throws SQLException {
 
         List<String> allCategories = categoryModel.getAvailableCategories();
-
 
         //root node for treeView, hidden.
         CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Root");
@@ -174,7 +188,6 @@ public class MainController implements Initializable {
         for (String category : allCategories) {
             categoriesNode.getChildren().add(new CheckBoxTreeItem<>(category));
         }
-
         //TODO make this not shit dude bro homie
         CheckBoxTreeItem<String> imdbNode = new CheckBoxTreeItem<>("IMDB Rating");
         imdbNode.getChildren().addAll(
@@ -209,9 +222,10 @@ public class MainController implements Initializable {
         filterBox.setShowRoot(false);
     }
 
-    public void applyFilters() throws Exception {
+    public void applyFiltersAndSearch() throws Exception {
         List<TreeItem<String>> checkedItems = filterBox.getCheckModel().getCheckedItems();
 
+        String searchQuery = txtSearch.getText();
         Set<String> selectedCategories = new HashSet<>();
         Set<String> selectedImdbRange = new HashSet<>();
         Set<String> selectedPersonalRating = new HashSet<>();
@@ -230,19 +244,23 @@ public class MainController implements Initializable {
                 }
             }
         }
-        //TODO should probably handle this in moviemodel and just change moviesToBeViewed : )) )) ) ) ) ) : :)):):):)::):)
-        ObservableList<Movie> filteredList = movieModel.applyFilters(selectedCategories, selectedImdbRange, selectedPersonalRating);
+        ObservableList<Movie> filteredList = null;
+        if (txtSearch.getText().isEmpty()) {
+            filteredList = movieModel.applyFiltersAndSearch(null,selectedCategories, selectedImdbRange, selectedPersonalRating);
+        } else if (!txtSearch.getText().isEmpty()) {
+            filteredList = movieModel.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRange, selectedPersonalRating);
+        }
         tblMovies.setItems(filteredList);
     }
 
-
-
-    public void handlePlayMovie(ActionEvent actionEvent) {
+    public void handlePlayMovie(ActionEvent actionEvent) throws Exception {
         Movie movieFile = tblMovies.getSelectionModel().getSelectedItem();
         File file = new File (movieFile.getFilePath());
         if (!file.exists()) {
-            //TODO delete the selected item in database??? WHY IS IT THERE IF THE FILE DOESNT EXIST
-            alertMethod("File doesnt exist, sorry", Alert.AlertType.INFORMATION);
+            Optional<ButtonType> result = alertMethod("File doesnt exist, do you want to delete it from the application?", Alert.AlertType.CONFIRMATION);
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                movieModel.deleteMovie(movieFile);
+            }
             return;
         }
 
@@ -257,8 +275,6 @@ public class MainController implements Initializable {
         }
     }
 
-
-
     public void updateMovieCategories(Movie updatedMovie) {
         try {
             movieModel.updateMovie(updatedMovie); // Update movie in model
@@ -267,10 +283,14 @@ public class MainController implements Initializable {
         }
     }
 
+    public void handleSearch(ActionEvent actionEvent) throws Exception {
+        applyFiltersAndSearch();
+    }
 
-
-
-
-
+    public void handleSearchKeyPressed(KeyEvent keyEvent) throws Exception {
+        if (keyEvent.getCode() == KeyCode.ENTER) {
+            applyFiltersAndSearch();
+        }
+    }
 }
 

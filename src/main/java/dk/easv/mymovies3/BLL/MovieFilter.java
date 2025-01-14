@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,9 +21,9 @@ public class MovieFilter {
         movieDAO = new MovieDAO();
     }
 
-
     //TODO maybe dont use observable list for all of these, and instead having it be just a list.....
-    public ObservableList<Movie> applyFilters(Set<String> selectedCategories,
+    public ObservableList<Movie> applyFiltersAndSearch(String searchQuery,
+                                              Set<String> selectedCategories,
                                               Set<String> selectedImdbRatings,
                                               Set<String> selectedPersonalRatings) throws Exception {
 
@@ -31,11 +32,16 @@ public class MovieFilter {
         FilteredList<Movie> filteredMovies = new FilteredList<>(allMovies);
 
         filteredMovies.setPredicate(movie -> {
-            if (selectedCategories.isEmpty() && selectedImdbRatings.isEmpty() && selectedPersonalRatings.isEmpty()) {
+            if (selectedCategories.isEmpty()
+                    && selectedImdbRatings.isEmpty()
+                    && selectedPersonalRatings.isEmpty()
+                    && searchQuery == null) {
                 return true;
             }
 
-            Set<String> movieCategoryNames = movie.getCategories().stream().map(Category::getCategoryName).collect(Collectors.toSet());
+            Set<String> movieCategoryNames = movie.getCategories().stream()
+                    .map(Category::getCategoryName)
+                    .collect(Collectors.toSet());
 
             boolean matchesCategory = selectedCategories.isEmpty() ||
                     movieCategoryNames.containsAll(selectedCategories);
@@ -46,7 +52,10 @@ public class MovieFilter {
             boolean matchesPersonal = selectedPersonalRatings.isEmpty() ||
                     selectedPersonalRatings.stream().anyMatch(range -> isInRange(range, movie.getPersonalRating()));
 
-            return matchesCategory && matchesIMDB && matchesPersonal;
+            boolean matchesSearch = (searchQuery == null || searchQuery.isEmpty()) ||
+                                    movie.getMovieTitle().toLowerCase().contains(searchQuery.toLowerCase());
+
+            return matchesCategory && matchesIMDB && matchesPersonal && matchesSearch;
         });
         return filteredMovies;
     }
