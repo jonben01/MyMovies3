@@ -173,13 +173,14 @@ public class MainController implements Initializable {
         }
         else
         {
+            Movie movieToDelete = tblMovies.getSelectionModel().getSelectedItem();
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Delete Movie");
             alert.setHeaderText(null);
-            alert.setContentText("Are you sure you want to delete this movie?");
+            alert.setContentText("Are you sure you want to delete: " + movieToDelete.getMovieTitle() + "?" );
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK) {
-                movieModel.deleteMovie(tblMovies.getSelectionModel().getSelectedItem());
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                movieModel.deleteMovie(movieToDelete);
                 tblMovies.refresh();
             }
         }

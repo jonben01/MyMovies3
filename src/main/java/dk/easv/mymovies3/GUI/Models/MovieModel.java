@@ -23,13 +23,6 @@ public class MovieModel {
         moviesToBeViewed = FXCollections.observableArrayList();
         moviesToBeViewed.addAll(movieManager.getAllMovies());
 
-        /*// Adding sample data for debugging
-        moviesToBeViewed.add(new Movie("Sample Movie", 7.5, 8, "/path/to/file", 2023));*/
-
-        System.out.println("Movies loaded: " + moviesToBeViewed.size());
-        for (Movie movie : moviesToBeViewed) {
-            System.out.println(movie.getMovieTitle());
-        }
     }
 
 
