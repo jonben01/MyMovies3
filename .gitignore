@@ -39,3 +39,4 @@ build/
 config/database.settings
 config/database.settings
 *.mp4
+.idea/misc.xml
