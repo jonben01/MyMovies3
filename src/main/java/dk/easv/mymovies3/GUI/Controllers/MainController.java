@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class MainController implements Initializable {
     @FXML private TableColumn<Movie, Integer> colPersonalRating;
     @FXML private TableColumn<Movie, Integer> colYear;
     @FXML private TableColumn<Movie, String> colCategory;
+    @FXML private TableColumn<Movie, String> colLastOpened;
 
     private PauseTransition searchPause;
 
@@ -108,6 +110,7 @@ public class MainController implements Initializable {
         colIMDB.setCellValueFactory(new PropertyValueFactory<>("imdbRating"));
         colPersonalRating.setCellValueFactory(new PropertyValueFactory<>("personalRating"));
         colYear.setCellValueFactory(new PropertyValueFactory<>("movieYear"));
+        colLastOpened.setCellValueFactory(new PropertyValueFactory<>("lastOpened"));
 
         colCategory.setCellValueFactory(data -> {
             Movie movie = data.getValue();
@@ -273,6 +276,9 @@ public class MainController implements Initializable {
                 throw new RuntimeException("oopsie woopsie",e);
             }
         }
+        movieModel.updateLastOpened(movieFile);
+        movieFile.setLastOpenedDate(new Date());
+        updateMovieCategories(movieFile);
     }
 
     public void updateMovieCategories(Movie updatedMovie) {
@@ -282,5 +288,8 @@ public class MainController implements Initializable {
         } catch (Exception e) {
         }
     }
+
+
+
 }
 

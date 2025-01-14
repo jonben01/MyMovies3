@@ -2,7 +2,6 @@ package dk.easv.mymovies3.BLL;
 
 import dk.easv.mymovies3.BE.Movie;
 import dk.easv.mymovies3.DAL.MovieDAO;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
@@ -44,5 +43,9 @@ public class MovieManager {
                                               Set<String> selectedImdbRatings,
                                               Set<String> selectedPersonalRatings) throws Exception {
         return movieFilter.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRatings, selectedPersonalRatings);
+    }
+
+    public void updateLastOpened(Movie movieFile) throws Exception {
+        movieDAO.updateLastOpened(movieFile);
     }
 }

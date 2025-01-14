@@ -7,6 +7,7 @@ import dk.easv.mymovies3.BE.Movie;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,7 @@ public class MovieDAO implements IMovieDataAccess {
         try (Connection conn = connector.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, m.Movie_Year, c.Id as Category_Id, c.Category_Name " +
+            String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, m.Movie_Year, c.Id as Category_Id, c.Category_Name, COALESCE(FORMAT(m.Last_Opened_Date, 'YYYY-MM-DD'), 'never opened') AS Last_Opened_Date " +
                     "FROM Movie m " +
                     "LEFT JOIN CatMov_Junction cmj ON m.Id = cmj.Movie_Id " +
                     "LEFT JOIN Category c ON cmj.Category_Id = c.Id";
@@ -69,11 +70,13 @@ public class MovieDAO implements IMovieDataAccess {
                 double personal = rs.getInt("Personal_Rating");
                 String filePath = rs.getString("File_Path");
                 int year = rs.getInt("Movie_Year");
+                Date lastOpenedDate = rs.getDate("Last_Opened_Date");
 
                 Movie movie = movieMap.get(id);
                 if (movie == null) {
                     movie = new Movie(id, title, imdbRating, personal, filePath, year, new ArrayList<>());
                     movieMap.put(id, movie);
+                    movie.setLastOpenedDate(lastOpenedDate);
                 }
 
                 int categoryId = rs.getInt("Category_Id");
@@ -111,6 +114,15 @@ public class MovieDAO implements IMovieDataAccess {
 
             // Refresh the categories in the Movie object
             movie.setCategories(getCategoriesForMovie(movie.getId()));
+        }
+    }
+
+    public void updateLastOpened(Movie movie) throws Exception {
+        String sql = "UPDATE dbo.Movie SET Last_Opened = ? WHERE Id = ?";
+        try (Connection conn = connector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+       stmt.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
+            stmt.executeUpdate();
         }
     }
 
