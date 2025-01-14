@@ -282,15 +282,5 @@ public class MainController implements Initializable {
         } catch (Exception e) {
         }
     }
-
-    public void handleSearch(ActionEvent actionEvent) throws Exception {
-        applyFiltersAndSearch();
-    }
-
-    public void handleSearchKeyPressed(KeyEvent keyEvent) throws Exception {
-        if (keyEvent.getCode() == KeyCode.ENTER) {
-            applyFiltersAndSearch();
-        }
-    }
 }
 

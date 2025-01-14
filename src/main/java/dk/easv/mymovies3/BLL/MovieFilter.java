@@ -21,7 +21,6 @@ public class MovieFilter {
         movieDAO = new MovieDAO();
     }
 
-    //TODO maybe dont use observable list for all of these, and instead having it be just a list.....
     public ObservableList<Movie> applyFiltersAndSearch(String searchQuery,
                                               Set<String> selectedCategories,
                                               Set<String> selectedImdbRatings,

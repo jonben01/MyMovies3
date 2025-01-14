@@ -17,16 +17,11 @@
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0" />
-                  <TextField fx:id="txtSearch" alignment="TOP_CENTER" onKeyPressed="#handleSearchKeyPressed" prefHeight="25.0" prefWidth="247.0" promptText="Search for a movie">
+                  <TextField fx:id="txtSearch" alignment="TOP_CENTER" prefHeight="25.0" prefWidth="247.0" promptText="Search for a movie">
                      <HBox.margin>
                         <Insets top="10.0" />
                      </HBox.margin>
                   </TextField>
-                  <Button fx:id="btnSearch" minHeight="20.0" minWidth="30.0" mnemonicParsing="false" onAction="#handleSearch" text="Search">
-                     <HBox.margin>
-                        <Insets right="30.0" top="10.0" />
-                     </HBox.margin>
-                  </Button>
                   <ComboBox prefHeight="25.0" prefWidth="228.0" promptText="Category stuff (Needs new library)">
                      <HBox.margin>
                         <Insets top="10.0" />
