@@ -18,12 +18,18 @@ public class NewCategoryController {
     @FXML
     private ListView<Category> listCategory;
 
+    private NewMovieController newMovieController;
+
     public NewCategoryController() throws IOException, SQLException {
         categoryModel = new CategoryModel();
     }
     @FXML
     private void initialize() throws SQLException {
         UpdateCategories();
+    }
+
+    public void setMovieController(NewMovieController newMovieController) {
+        this.newMovieController = newMovieController;
     }
 
     @FXML
@@ -33,6 +39,7 @@ public class NewCategoryController {
             Category newCategory = new Category(txtCategory.getText());
             categoryModel.createCategory(newCategory);
             UpdateCategories();
+            newMovieController.updateCategories();
 
         }
     }

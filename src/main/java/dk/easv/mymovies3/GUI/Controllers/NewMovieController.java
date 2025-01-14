@@ -230,6 +230,8 @@ public class NewMovieController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newCategoryView.fxml"));
             Parent root = loader.load();
+            NewCategoryController controller = loader.getController();
+            controller.setMovieController(this);
 
             Stage stage = new Stage();
             stage.setTitle("New Category");
@@ -309,6 +311,13 @@ public class NewMovieController implements Initializable {
     public void handleCancelMovie(ActionEvent actionEvent) {
         Stage stage = (Stage) btnCancelMovie.getScene().getWindow();
         stage.close(); }
+
+    public void updateCategories() throws SQLException {
+        lstCategories.getItems().clear();
+        allCategories.clear();
+        allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
+        lstCategories.setItems(allCategories);
+    }
 
 
 
