@@ -34,6 +34,7 @@ public class CategoryModel {
 
     public void createCategory(Category category) throws SQLException {
         Category createdCategory = categoryManager.CreateCategory(category);
+        categories.add(createdCategory);
     }
 
     public ArrayList<Category> getAllCategories() throws SQLException {
@@ -43,6 +44,7 @@ public class CategoryModel {
 
     public void DeleteCategory(Category category) throws SQLException {
             Category deletedCategory = categoryManager.DeleteCategory(category);
+            categories.remove(deletedCategory);
     }
 
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {

@@ -20,7 +20,7 @@ public class MovieManager {
         movieFilter = new MovieFilter();
     }
 
-    public List<Movie> getAllMovies() throws Exception {
+    public List<Movie> getAllMovies() throws SQLException {
             return movieDAO.getAllMovies();
     }
 
