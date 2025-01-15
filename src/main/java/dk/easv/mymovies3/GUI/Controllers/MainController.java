@@ -121,7 +121,7 @@ public class MainController implements Initializable {
         });
     }
 
-    public void handleAddMovie(ActionEvent actionEvent) {
+    public void handleAddMovie(ActionEvent actionEvent) throws MovieOperationException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newMovieView.fxml"));
             Parent root = loader.load();
@@ -137,11 +137,17 @@ public class MainController implements Initializable {
             stage.show();
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+
+            System.err.println("Error adding movie: " + e.getMessage());
+            e.printStackTrace();
+
+            alertMethod("An error occurred while adding Movie. Please try again later.", Alert.AlertType.ERROR);
+
+            throw new MovieOperationException("Failed to add movie. ", e);
         }
     }
 
-    public void handleEditMovie(ActionEvent actionEvent) {
+    public void handleEditMovie(ActionEvent actionEvent) throws MovieOperationException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
         if (selectedMovie == null) {
             alertMethod("Please select a movie before editing!", Alert.AlertType.INFORMATION);
@@ -161,12 +167,26 @@ public class MainController implements Initializable {
                 stage.setScene(new Scene(root));
                 stage.show();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+
+                System.err.println("Error loading view: " + e.getMessage());
+                e.printStackTrace();
+
+                alertMethod("An error occurred while loading the Edit Movie view. Please try again later.", Alert.AlertType.ERROR);
+                throw new MovieOperationException("Failed to load the edit movie view.", e);
             }
         }
     }
 
-    public void handleDeleteMovie(ActionEvent actionEvent) throws Exception {
+    public class MovieOperationException extends RuntimeException {
+        public MovieOperationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+
+
+    public void handleDeleteMovie(ActionEvent actionEvent) throws MovieOperationException {
+
         if(tblMovies.getSelectionModel().getSelectedItem() == null)
         {
             alertMethod("Please select a movie before deleting!", Alert.AlertType.WARNING);
@@ -180,7 +200,17 @@ public class MainController implements Initializable {
             alert.setContentText("Are you sure you want to delete: " + movieToDelete.getMovieTitle() + "?" );
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                movieModel.deleteMovie(movieToDelete);
+                try {
+                    movieModel.deleteMovie(movieToDelete);
+
+                } catch (Exception e) {
+                    System.err.println("Error deleting movie: " + e.getMessage());
+                    e.printStackTrace();
+
+                    alertMethod("An error occurred while deleting a Movie. Please try again later" , Alert.AlertType.ERROR );
+
+                    throw new MovieOperationException("Failed to delete movie.", e);
+                }
                 tblMovies.refresh();
             }
         }
@@ -270,35 +300,41 @@ public class MainController implements Initializable {
         filterBox.setShowRoot(false);
     }
 
-    public void applyFiltersAndSearch() throws Exception {
-        List<TreeItem<String>> checkedItems = filterBox.getCheckModel().getCheckedItems();
+    public void applyFiltersAndSearch() throws MovieOperationException {
 
-        String searchQuery = txtSearch.getText();
-        Set<String> selectedCategories = new HashSet<>();
-        Set<String> selectedImdbRange = new HashSet<>();
-        Set<String> selectedPersonalRating = new HashSet<>();
+        try {
+            List<TreeItem<String>> checkedItems = filterBox.getCheckModel().getCheckedItems();
 
-        for (TreeItem<String> item : checkedItems) {
-            TreeItem<String> parent = item.getParent();
+            String searchQuery = txtSearch.getText();
+            Set<String> selectedCategories = new HashSet<>();
+            Set<String> selectedImdbRange = new HashSet<>();
+            Set<String> selectedPersonalRating = new HashSet<>();
 
-            if (parent != null) {
-                String parentValue = parent.getValue();
-                if ("Categories".equals(parentValue)) {
-                    selectedCategories.add(item.getValue());
-                } else if ("IMDB Rating".equals(parentValue)) {
-                    selectedImdbRange.add(item.getValue());
-                } else if ("Personal Rating".equals(parentValue)) {
-                    selectedPersonalRating.add(item.getValue());
+            for (TreeItem<String> item : checkedItems) {
+                TreeItem<String> parent = item.getParent();
+
+                if (parent != null) {
+                    String parentValue = parent.getValue();
+                    if ("Categories".equals(parentValue)) {
+                        selectedCategories.add(item.getValue());
+                    } else if ("IMDB Rating".equals(parentValue)) {
+                        selectedImdbRange.add(item.getValue());
+                    } else if ("Personal Rating".equals(parentValue)) {
+                        selectedPersonalRating.add(item.getValue());
+                    }
                 }
             }
+            ObservableList<Movie> filteredList = null;
+            if (txtSearch.getText().isEmpty()) {
+                filteredList = movieModel.applyFiltersAndSearch(null, selectedCategories, selectedImdbRange, selectedPersonalRating);
+            } else if (!txtSearch.getText().isEmpty()) {
+                filteredList = movieModel.applyFiltersAndSearch(searchQuery, selectedCategories, selectedImdbRange, selectedPersonalRating);
+            }
+            tblMovies.setItems(filteredList);
+
+        } catch (Exception e) {
+            throw new MovieOperationException("An error occurred while applying filters and searching", e);
         }
-        ObservableList<Movie> filteredList = null;
-        if (txtSearch.getText().isEmpty()) {
-            filteredList = movieModel.applyFiltersAndSearch(null,selectedCategories, selectedImdbRange, selectedPersonalRating);
-        } else if (!txtSearch.getText().isEmpty()) {
-            filteredList = movieModel.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRange, selectedPersonalRating);
-        }
-        tblMovies.setItems(filteredList);
     }
 
     public void handlePlayMovie(ActionEvent actionEvent) throws Exception {
@@ -319,17 +355,18 @@ public class MainController implements Initializable {
                 desktop.open(file);
                 movieModel.setLastOpened(movieFile);
             } catch (IOException e) {
-                throw new RuntimeException("oopsie woopsie",e);
+                throw new MovieOperationException("oopsie woopsie while playing movie",e);
             }
         }
     }
 
-    public void updateMovieCategories(Movie updatedMovie) {
+    public void updateMovieCategories(Movie updatedMovie) throws RuntimeException {
         try {
             movieModel.updateMovie(updatedMovie); // Update movie in model
-            tblMovies.refresh(); // Refresh the table view
         } catch (Exception e) {
+            throw new RuntimeException("An error occurred while updating movie categories", e);
         }
+
     }
 }
 

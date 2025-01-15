@@ -34,7 +34,7 @@ public class MovieManager {
         return movie;
     }
 
-    public Movie updateMovie(Movie movie) throws Exception {
+    public Movie updateMovie(Movie movie) throws SQLException {
         movieDAO.updateMovie(movie);
         return movie;
     }
