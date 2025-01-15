@@ -49,12 +49,16 @@ public class MovieDAO implements IMovieDataAccess {
         }
     }
 
+    //Retrieves a list of all movies from the database
     public List<Movie> getAllMovies() throws SQLException {
+
+        //HashMap to avoid duplicating Movie objects when a movie has multiple categories
         Map<Integer, Movie> movieMap = new HashMap<>();
 
         try (Connection conn = connector.getConnection();
              Statement stmt = conn.createStatement()) {
 
+            //Execute an SQL query to join the Movie, CatMov_Junction, and Category tables
             String sql = "SELECT m.Id, m.Movie_Title, m.IMDB_Rating, m.Personal_Rating, m.File_Path, " +
                     "m.Movie_Year, c.Id as Category_Id, c.Category_Name, m.Last_Opened_Date " +
                     "FROM Movie m " +
@@ -77,7 +81,7 @@ public class MovieDAO implements IMovieDataAccess {
                 int year = rs.getInt("Movie_Year");
                 Date lastOpened = rs.getDate("Last_Opened_Date");
 
-                Movie movie = movieMap.get(id);
+                Movie movie = movieMap.get(id); //Each unique movie is keyed by its ID
                 if (movie == null) {
                     movie = new Movie(id, title, imdbRating, personalRating, filePath, year, new ArrayList<>());
                     if (lastOpened != null) {
@@ -92,7 +96,7 @@ public class MovieDAO implements IMovieDataAccess {
                     movie.getCategories().add(new Category(categoryId, categoryName));
                 }
             }
-
+            //Convert the HashMap values into a List and return it
             return new ArrayList<>(movieMap.values());
 
         } catch (SQLException ex) {
@@ -134,8 +138,12 @@ public class MovieDAO implements IMovieDataAccess {
 
     private List<Category> getCategoriesForMovie(int movieId) throws SQLException {
         List<Category> categories = new ArrayList<>();
+
         String sql = "SELECT c.Id, c.Category_Name FROM Category c " +
                 "JOIN CatMov_Junction cmj ON c.Id = cmj.Category_Id WHERE cmj.Movie_Id = ?";
+        /*Execute the query and process the results:
+         *    - For each row in the ResultSet, create a new `Category` object using the retrieved data.
+         *    - Add the `Category` object to the list.*/
         try (Connection conn = connector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, movieId);

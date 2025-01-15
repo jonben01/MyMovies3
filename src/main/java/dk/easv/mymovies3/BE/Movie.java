@@ -12,7 +12,7 @@ public class Movie {
     private Double personalRating;
     private String filePath;
     private int movieYear;
-    private List<Category> categories;
+    private List<Category> categories; // A list of categories associated with the movie
     private Date lastOpenedDate;
 
     public Date getLastOpenedDate() {return lastOpenedDate;}

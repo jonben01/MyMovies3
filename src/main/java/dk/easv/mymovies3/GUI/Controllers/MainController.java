@@ -147,6 +147,7 @@ public class MainController implements Initializable {
         }
     }
 
+    //Calls the edit stage when button is pressed
     public void handleEditMovie(ActionEvent actionEvent) throws MovieOperationException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
         if (selectedMovie == null) {
@@ -168,8 +169,6 @@ public class MainController implements Initializable {
                 stage.show();
             } catch (IOException e) {
 
-                System.err.println("Error loading view: " + e.getMessage());
-                e.printStackTrace();
 
                 alertMethod("An error occurred while loading the Edit Movie view. Please try again later.", Alert.AlertType.ERROR);
                 throw new MovieOperationException("Failed to load the edit movie view.", e);
@@ -177,6 +176,7 @@ public class MainController implements Initializable {
         }
     }
 
+    //Custom exception method
     public class MovieOperationException extends RuntimeException {
         public MovieOperationException(String message, Throwable cause) {
             super(message, cause);
@@ -216,6 +216,7 @@ public class MainController implements Initializable {
         }
     }
 
+    //Setting view for application
     private void setupTableViews() {
         colTitle.setCellValueFactory(new PropertyValueFactory<>("movieTitle"));
         colIMDB.setCellValueFactory(new PropertyValueFactory<>("imdbRating"));
@@ -224,14 +225,14 @@ public class MainController implements Initializable {
 
         colCategory.setCellValueFactory(data -> {
             Movie movie = data.getValue();
-            StringBuilder categories = new StringBuilder();
+            StringBuilder categories = new StringBuilder(); //A StringBuilder is used to build a comma-separated string of category names by iterating over the getCategories() list of the Movie object
             for (Category category : movie.getCategories()) {
                 if (categories.length() > 0) {
                     categories.append(", ");
                 }
                 categories.append(category.getCategoryName());
             }
-            return new ReadOnlyStringWrapper(categories.toString());
+            return new ReadOnlyStringWrapper(categories.toString()); //resulting string is wrapped in a ReadOnlyStringWrapper (a JavaFX observable value) so it can be displayed in the table
         });
 
         tblMovies.setItems(movieModel.getObservableMovies());
@@ -363,6 +364,7 @@ public class MainController implements Initializable {
         }
     }
 
+    //Allows update categories view at the same time as movie was updated
     public void updateMovieCategories(Movie updatedMovie) throws RuntimeException {
         try {
             movieModel.updateMovie(updatedMovie); // Update movie in model

@@ -161,6 +161,7 @@ public class NewMovieController implements Initializable {
             ArrayList<Category> selectedCategories = getSelectedCategories();
 
 
+
             if (isUpdateMode) {
                 // Update existing movie
                 updateMovie(title, imdbRating, personalRating, year, newFilePath, selectedCategories);
@@ -191,7 +192,6 @@ public class NewMovieController implements Initializable {
         return true;
 
     }
-
 
 
     private String handleFileCopy() throws MovieOperationException {
@@ -234,6 +234,7 @@ public class NewMovieController implements Initializable {
         return selectedCategories;
     }
 
+    //Allow update a movie
     private void updateMovie(String title, Double imdbRating, Double personalRating, int year, String filePath, ArrayList<Category> selectedCategories) throws MovieOperationException {
 
         try {
@@ -314,6 +315,7 @@ try {
         this.movieModel = movieModel;
     }
 
+    //Allows to use the same stage for creating and editing a movie
     public void setMode(boolean isUpdateMode, Movie movieToUpdate) {
         this.isUpdateMode = isUpdateMode;
         this.movieToUpdate = movieToUpdate;
@@ -362,6 +364,7 @@ try {
         }
     }
 
+    //custom exception method
     public class MovieOperationException extends RuntimeException {
         public MovieOperationException(String message, Throwable cause) {
             super(message, cause);
