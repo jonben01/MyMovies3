@@ -71,7 +71,6 @@ public class MainController implements Initializable {
                 content.append(movie.getMovieTitle()).append("\n");
             }
 
-
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Delete old and disliked movies?");
             alert.setHeaderText(content.toString());
