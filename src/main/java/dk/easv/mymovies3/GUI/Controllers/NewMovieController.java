@@ -190,13 +190,13 @@ public class NewMovieController implements Initializable {
         setCategories(movieToUpdate);
     }
 
-    private void createMovie(String title, Double imdbRating, Double personalRating, int year, String filePath, ArrayList<Category> selectedCategories) throws SQLException {
+    private void createMovie(String title, Double imdbRating, Double personalRating, int year, String filePath, ArrayList<Category> selectedCategories) throws Exception {
         Movie newMovie = new Movie(title, imdbRating, personalRating, filePath, year, selectedCategories);
         movieModel.createMovie(newMovie);
         setCategories(newMovie);
     }
 
-    private void setCategories(Movie movie) throws SQLException {
+    private void setCategories(Movie movie) throws Exception {
 
         //Clear existing categories
         categoryModel.clearCategoriesForMovie(movie.getId());
@@ -277,7 +277,7 @@ public class NewMovieController implements Initializable {
                     setText(null);
                 } else {
                     checkBox.setText(category.getCategoryName());
-                    //checkBox.setSelected(category.isSelected());
+                    checkBox.setSelected(category.isSelected());
                     checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
                         category.setSelected(newValue);
                     });
