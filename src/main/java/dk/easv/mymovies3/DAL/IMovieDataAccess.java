@@ -10,9 +10,9 @@ public interface IMovieDataAccess {
 
     Movie createMovie (Movie movie) throws SQLException;
 
-    List<Movie> getAllMovies () throws Exception;
+    List<Movie> getAllMovies () throws SQLException;
 
-    void updateMovie (Movie movie) throws Exception;
+    void updateMovie (Movie movie) throws SQLException;
 
     void deleteMovie (Movie movie) throws SQLException;
 

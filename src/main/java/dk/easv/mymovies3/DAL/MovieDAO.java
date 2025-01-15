@@ -49,7 +49,7 @@ public class MovieDAO implements IMovieDataAccess {
         }
     }
 
-    public List<Movie> getAllMovies() throws Exception {
+    public List<Movie> getAllMovies() throws SQLException {
         Map<Integer, Movie> movieMap = new HashMap<>();
 
         try (Connection conn = connector.getConnection();
@@ -96,8 +96,7 @@ public class MovieDAO implements IMovieDataAccess {
             return new ArrayList<>(movieMap.values());
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new Exception("Could not get movies from database", ex);
+            throw new SQLException("Could not get movies from database", ex);
         }
     }
 
@@ -113,7 +112,7 @@ public class MovieDAO implements IMovieDataAccess {
     }
 
     @Override
-    public void updateMovie(Movie movie) throws Exception {
+    public void updateMovie(Movie movie) throws SQLException {
         String sql = "UPDATE dbo.Movie SET Movie_Title = ?, IMDB_Rating = ?, Personal_Rating = ?, File_Path = ?, Movie_Year = ? WHERE Id = ?";
         try (Connection conn = connector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

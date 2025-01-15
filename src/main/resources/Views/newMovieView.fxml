@@ -17,7 +17,7 @@
       <Button fx:id="btnFileChooser" layoutX="227.0" layoutY="26.0" mnemonicParsing="false" onAction="#handleFileChooser" text="FileChooser" />
       <Button fx:id="btnAddMovie" layoutX="49.0" layoutY="326.0" mnemonicParsing="false" onAction="#handleAddMovie" text="add" />
       <Button fx:id="btnCancelMovie" layoutX="473.0" layoutY="326.0" mnemonicParsing="false" onAction="#handleCancelMovie" text="cancel" />
-      <Button layoutX="447.0" layoutY="219.0" mnemonicParsing="false" onAction="#OnNewCategoryClick" text="New Category">
+      <Button layoutX="447.0" layoutY="219.0" mnemonicParsing="false" onAction="#onNewCategoryClick" text="New Category">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font>

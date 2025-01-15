@@ -71,7 +71,6 @@ public class MainController implements Initializable {
                 content.append(movie.getMovieTitle()).append("\n");
             }
 
-
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Delete old and disliked movies?");
             alert.setHeaderText(content.toString());
@@ -91,8 +90,9 @@ public class MainController implements Initializable {
         try {
             populateFilterBox();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("problem populating filterbox in initialize", e);
         }
+
         filterBox.getCheckModel().getCheckedItems().addListener((ListChangeListener<TreeItem<String>>) c -> {
             while (c.next()) {
                 //TODO figure out if this runs well like this, what happens if you uncheck all at the same time?
@@ -121,7 +121,7 @@ public class MainController implements Initializable {
         });
     }
 
-    public void handleAddMovie(ActionEvent actionEvent) {
+    public void handleAddMovie(ActionEvent actionEvent) throws MovieOperationException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newMovieView.fxml"));
             Parent root = loader.load();
@@ -137,11 +137,17 @@ public class MainController implements Initializable {
             stage.show();
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+
+            System.err.println("Error adding movie: " + e.getMessage());
+            e.printStackTrace();
+
+            alertMethod("An error occurred while adding Movie. Please try again later.", Alert.AlertType.ERROR);
+
+            throw new MovieOperationException("Failed to add movie. ", e);
         }
     }
 
-    public void handleEditMovie(ActionEvent actionEvent) {
+    public void handleEditMovie(ActionEvent actionEvent) throws MovieOperationException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
         if (selectedMovie == null) {
             alertMethod("Please select a movie before editing!", Alert.AlertType.INFORMATION);
@@ -161,12 +167,26 @@ public class MainController implements Initializable {
                 stage.setScene(new Scene(root));
                 stage.show();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+
+                System.err.println("Error loading view: " + e.getMessage());
+                e.printStackTrace();
+
+                alertMethod("An error occurred while loading the Edit Movie view. Please try again later.", Alert.AlertType.ERROR);
+                throw new MovieOperationException("Failed to load the edit movie view.", e);
             }
         }
     }
 
-    public void handleDeleteMovie(ActionEvent actionEvent) throws Exception {
+    public class MovieOperationException extends RuntimeException {
+        public MovieOperationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+
+
+    public void handleDeleteMovie(ActionEvent actionEvent) throws MovieOperationException {
+
         if(tblMovies.getSelectionModel().getSelectedItem() == null)
         {
             alertMethod("Please select a movie before deleting!", Alert.AlertType.WARNING);
@@ -180,7 +200,17 @@ public class MainController implements Initializable {
             alert.setContentText("Are you sure you want to delete: " + movieToDelete.getMovieTitle() + "?" );
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                movieModel.deleteMovie(movieToDelete);
+                try {
+                    movieModel.deleteMovie(movieToDelete);
+
+                } catch (Exception e) {
+                    System.err.println("Error deleting movie: " + e.getMessage());
+                    e.printStackTrace();
+
+                    alertMethod("An error occurred while deleting a Movie. Please try again later" , Alert.AlertType.ERROR );
+
+                    throw new MovieOperationException("Failed to delete movie.", e);
+                }
                 tblMovies.refresh();
             }
         }
@@ -216,7 +246,7 @@ public class MainController implements Initializable {
         return alert.showAndWait();
     }
 
-    public MainController() throws Exception {
+    public MainController() throws SQLException, IOException {
             categoryModel = new CategoryModel();
             movieModel = new MovieModel();
     }
@@ -224,81 +254,90 @@ public class MainController implements Initializable {
 
     //TODO make sure it updates when you add a new category.
     public void populateFilterBox() throws SQLException {
+        try {
+            List<String> allCategories = categoryModel.getAvailableCategories();
 
-        List<String> allCategories = categoryModel.getAvailableCategories();
+            //root node for treeView, hidden.
+            CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Root");
+            root.setExpanded(true);
 
-        //root node for treeView, hidden.
-        CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Root");
-        root.setExpanded(true);
-
-        //adds a category node, and creates new checkboxes under it.
-        CheckBoxTreeItem<String> categoriesNode = new CheckBoxTreeItem<>("Categories");
-        for (String category : allCategories) {
-            categoriesNode.getChildren().add(new CheckBoxTreeItem<>(category));
+            //adds a category node, and creates new checkboxes under it.
+            CheckBoxTreeItem<String> categoriesNode = new CheckBoxTreeItem<>("Categories");
+            for (String category : allCategories) {
+                categoriesNode.getChildren().add(new CheckBoxTreeItem<>(category));
+            }
+            //TODO make this not shit dude bro homie
+            CheckBoxTreeItem<String> imdbNode = new CheckBoxTreeItem<>("IMDB Rating");
+            imdbNode.getChildren().addAll(
+                    new CheckBoxTreeItem<>("0.0 - 0.9"),
+                    new CheckBoxTreeItem<>("1.0 - 1.9"),
+                    new CheckBoxTreeItem<>("2.0 - 2.9"),
+                    new CheckBoxTreeItem<>("3.0 - 3.9"),
+                    new CheckBoxTreeItem<>("4.0 - 4.9"),
+                    new CheckBoxTreeItem<>("5.0 - 5.9"),
+                    new CheckBoxTreeItem<>("6.0 - 6.9"),
+                    new CheckBoxTreeItem<>("7.0 - 7.9"),
+                    new CheckBoxTreeItem<>("8.0 - 8.9"),
+                    new CheckBoxTreeItem<>("9.0 - 10.0")
+            );
+            //TODO make this not shit dude bro homie
+            CheckBoxTreeItem<String> personalRatingNode = new CheckBoxTreeItem<>("Personal Rating");
+            personalRatingNode.getChildren().addAll(
+                    new CheckBoxTreeItem<>("0.0 - 0.9"),
+                    new CheckBoxTreeItem<>("1.0 - 1.9"),
+                    new CheckBoxTreeItem<>("2.0 - 2.9"),
+                    new CheckBoxTreeItem<>("3.0 - 3.9"),
+                    new CheckBoxTreeItem<>("4.0 - 4.9"),
+                    new CheckBoxTreeItem<>("5.0 - 5.9"),
+                    new CheckBoxTreeItem<>("6.0 - 6.9"),
+                    new CheckBoxTreeItem<>("7.0 - 7.9"),
+                    new CheckBoxTreeItem<>("8.0 - 8.9"),
+                    new CheckBoxTreeItem<>("9.0 - 10.0")
+            );
+            root.getChildren().addAll(categoriesNode, imdbNode, personalRatingNode);
+            //sets the root of the treeView and hides it.
+            filterBox.setRoot(root);
+            filterBox.setShowRoot(false);
+        } catch (SQLException e) {
+            throw new SQLException("Failed to populate filter box due to a database error.", e);
         }
-        //TODO make this not shit dude bro homie
-        CheckBoxTreeItem<String> imdbNode = new CheckBoxTreeItem<>("IMDB Rating");
-        imdbNode.getChildren().addAll(
-                new CheckBoxTreeItem<>("0.0 - 0.9"),
-                new CheckBoxTreeItem<>("1.0 - 1.9"),
-                new CheckBoxTreeItem<>("2.0 - 2.9"),
-                new CheckBoxTreeItem<>("3.0 - 3.9"),
-                new CheckBoxTreeItem<>("4.0 - 4.9"),
-                new CheckBoxTreeItem<>("5.0 - 5.9"),
-                new CheckBoxTreeItem<>("6.0 - 6.9"),
-                new CheckBoxTreeItem<>("7.0 - 7.9"),
-                new CheckBoxTreeItem<>("8.0 - 8.9"),
-                new CheckBoxTreeItem<>("9.0 - 10.0")
-        );
-        //TODO make this not shit dude bro homie
-        CheckBoxTreeItem<String> personalRatingNode = new CheckBoxTreeItem<>("Personal Rating");
-        personalRatingNode.getChildren().addAll(
-                new CheckBoxTreeItem<>("0.0 - 0.9"),
-                new CheckBoxTreeItem<>("1.0 - 1.9"),
-                new CheckBoxTreeItem<>("2.0 - 2.9"),
-                new CheckBoxTreeItem<>("3.0 - 3.9"),
-                new CheckBoxTreeItem<>("4.0 - 4.9"),
-                new CheckBoxTreeItem<>("5.0 - 5.9"),
-                new CheckBoxTreeItem<>("6.0 - 6.9"),
-                new CheckBoxTreeItem<>("7.0 - 7.9"),
-                new CheckBoxTreeItem<>("8.0 - 8.9"),
-                new CheckBoxTreeItem<>("9.0 - 10.0")
-        );
-        root.getChildren().addAll(categoriesNode, imdbNode, personalRatingNode);
-        //sets the root of the treeView and hides it.
-        filterBox.setRoot(root);
-        filterBox.setShowRoot(false);
     }
 
-    public void applyFiltersAndSearch() throws Exception {
-        List<TreeItem<String>> checkedItems = filterBox.getCheckModel().getCheckedItems();
+    public void applyFiltersAndSearch() throws MovieOperationException {
 
-        String searchQuery = txtSearch.getText();
-        Set<String> selectedCategories = new HashSet<>();
-        Set<String> selectedImdbRange = new HashSet<>();
-        Set<String> selectedPersonalRating = new HashSet<>();
+        try {
+            List<TreeItem<String>> checkedItems = filterBox.getCheckModel().getCheckedItems();
 
-        for (TreeItem<String> item : checkedItems) {
-            TreeItem<String> parent = item.getParent();
+            String searchQuery = txtSearch.getText();
+            Set<String> selectedCategories = new HashSet<>();
+            Set<String> selectedImdbRange = new HashSet<>();
+            Set<String> selectedPersonalRating = new HashSet<>();
 
-            if (parent != null) {
-                String parentValue = parent.getValue();
-                if ("Categories".equals(parentValue)) {
-                    selectedCategories.add(item.getValue());
-                } else if ("IMDB Rating".equals(parentValue)) {
-                    selectedImdbRange.add(item.getValue());
-                } else if ("Personal Rating".equals(parentValue)) {
-                    selectedPersonalRating.add(item.getValue());
+            for (TreeItem<String> item : checkedItems) {
+                TreeItem<String> parent = item.getParent();
+
+                if (parent != null) {
+                    String parentValue = parent.getValue();
+                    if ("Categories".equals(parentValue)) {
+                        selectedCategories.add(item.getValue());
+                    } else if ("IMDB Rating".equals(parentValue)) {
+                        selectedImdbRange.add(item.getValue());
+                    } else if ("Personal Rating".equals(parentValue)) {
+                        selectedPersonalRating.add(item.getValue());
+                    }
                 }
             }
+            ObservableList<Movie> filteredList = null;
+            if (txtSearch.getText().isEmpty()) {
+                filteredList = movieModel.applyFiltersAndSearch(null, selectedCategories, selectedImdbRange, selectedPersonalRating);
+            } else if (!txtSearch.getText().isEmpty()) {
+                filteredList = movieModel.applyFiltersAndSearch(searchQuery, selectedCategories, selectedImdbRange, selectedPersonalRating);
+            }
+            tblMovies.setItems(filteredList);
+
+        } catch (Exception e) {
+            throw new MovieOperationException("An error occurred while applying filters and searching", e);
         }
-        ObservableList<Movie> filteredList = null;
-        if (txtSearch.getText().isEmpty()) {
-            filteredList = movieModel.applyFiltersAndSearch(null,selectedCategories, selectedImdbRange, selectedPersonalRating);
-        } else if (!txtSearch.getText().isEmpty()) {
-            filteredList = movieModel.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRange, selectedPersonalRating);
-        }
-        tblMovies.setItems(filteredList);
     }
 
     public void handlePlayMovie(ActionEvent actionEvent) throws Exception {
@@ -319,17 +358,18 @@ public class MainController implements Initializable {
                 desktop.open(file);
                 movieModel.setLastOpened(movieFile);
             } catch (IOException e) {
-                throw new RuntimeException("oopsie woopsie",e);
+                throw new MovieOperationException("oopsie woopsie while playing movie",e);
             }
         }
     }
 
-    public void updateMovieCategories(Movie updatedMovie) {
+    public void updateMovieCategories(Movie updatedMovie) throws RuntimeException {
         try {
             movieModel.updateMovie(updatedMovie); // Update movie in model
-            tblMovies.refresh(); // Refresh the table view
         } catch (Exception e) {
+            throw new RuntimeException("An error occurred while updating movie categories", e);
         }
+
     }
 }
 
