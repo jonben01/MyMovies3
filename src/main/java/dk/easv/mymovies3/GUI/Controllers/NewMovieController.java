@@ -277,7 +277,7 @@ public class NewMovieController implements Initializable {
                     setText(null);
                 } else {
                     checkBox.setText(category.getCategoryName());
-                    //checkBox.setSelected(category.isSelected());
+                    checkBox.setSelected(category.isSelected());
                     checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
                         category.setSelected(newValue);
                     });
@@ -305,13 +305,16 @@ public class NewMovieController implements Initializable {
 
             // Match categories in the movie to those in the ListView
             for (Category movieCategory : movieToUpdate.getCategories()) {
-                for (Category listViewCategory : lstCategories.getItems()) {
-                    if (movieCategory.getId() == listViewCategory.getId()) {
-                        listViewCategory.setSelected(true); // Mark category as selected
+                for (Category allCategory : allCategories) {
+                    if (movieCategory.equals(allCategory)) {
+                        allCategory.setSelected(true); // Mark category as selected
                         break;
                     }
                 }
             }
+
+            // Update the checkboxes in the ListView
+            lstCategories.refresh();
 
             btnAddMovie.setText("Edit Movie");
         } else {

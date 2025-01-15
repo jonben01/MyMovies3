@@ -2,6 +2,8 @@ package dk.easv.mymovies3.BE;
 
 import javafx.beans.property.BooleanProperty;
 
+import java.util.Objects;
+
 public class Category {
 
     private int id;
@@ -24,6 +26,18 @@ public class Category {
     }
     public Category(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Category category = (Category) obj;
+        return id == category.id && Objects.equals(categoryName, category.getCategoryName());
     }
 }
 
