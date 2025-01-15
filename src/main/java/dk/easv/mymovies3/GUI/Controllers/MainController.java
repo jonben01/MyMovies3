@@ -253,50 +253,53 @@ public class MainController implements Initializable {
 
     //TODO make sure it updates when you add a new category.
     public void populateFilterBox() throws SQLException {
+        try {
+            List<String> allCategories = categoryModel.getAvailableCategories();
 
-        List<String> allCategories = categoryModel.getAvailableCategories();
+            //root node for treeView, hidden.
+            CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Root");
+            root.setExpanded(true);
 
-        //root node for treeView, hidden.
-        CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Root");
-        root.setExpanded(true);
-
-        //adds a category node, and creates new checkboxes under it.
-        CheckBoxTreeItem<String> categoriesNode = new CheckBoxTreeItem<>("Categories");
-        for (String category : allCategories) {
-            categoriesNode.getChildren().add(new CheckBoxTreeItem<>(category));
+            //adds a category node, and creates new checkboxes under it.
+            CheckBoxTreeItem<String> categoriesNode = new CheckBoxTreeItem<>("Categories");
+            for (String category : allCategories) {
+                categoriesNode.getChildren().add(new CheckBoxTreeItem<>(category));
+            }
+            //TODO make this not shit dude bro homie
+            CheckBoxTreeItem<String> imdbNode = new CheckBoxTreeItem<>("IMDB Rating");
+            imdbNode.getChildren().addAll(
+                    new CheckBoxTreeItem<>("0.0 - 0.9"),
+                    new CheckBoxTreeItem<>("1.0 - 1.9"),
+                    new CheckBoxTreeItem<>("2.0 - 2.9"),
+                    new CheckBoxTreeItem<>("3.0 - 3.9"),
+                    new CheckBoxTreeItem<>("4.0 - 4.9"),
+                    new CheckBoxTreeItem<>("5.0 - 5.9"),
+                    new CheckBoxTreeItem<>("6.0 - 6.9"),
+                    new CheckBoxTreeItem<>("7.0 - 7.9"),
+                    new CheckBoxTreeItem<>("8.0 - 8.9"),
+                    new CheckBoxTreeItem<>("9.0 - 10.0")
+            );
+            //TODO make this not shit dude bro homie
+            CheckBoxTreeItem<String> personalRatingNode = new CheckBoxTreeItem<>("Personal Rating");
+            personalRatingNode.getChildren().addAll(
+                    new CheckBoxTreeItem<>("0.0 - 0.9"),
+                    new CheckBoxTreeItem<>("1.0 - 1.9"),
+                    new CheckBoxTreeItem<>("2.0 - 2.9"),
+                    new CheckBoxTreeItem<>("3.0 - 3.9"),
+                    new CheckBoxTreeItem<>("4.0 - 4.9"),
+                    new CheckBoxTreeItem<>("5.0 - 5.9"),
+                    new CheckBoxTreeItem<>("6.0 - 6.9"),
+                    new CheckBoxTreeItem<>("7.0 - 7.9"),
+                    new CheckBoxTreeItem<>("8.0 - 8.9"),
+                    new CheckBoxTreeItem<>("9.0 - 10.0")
+            );
+            root.getChildren().addAll(categoriesNode, imdbNode, personalRatingNode);
+            //sets the root of the treeView and hides it.
+            filterBox.setRoot(root);
+            filterBox.setShowRoot(false);
+        } catch (SQLException e) {
+            throw new SQLException("Failed to populate filter box due to a database error.", e);
         }
-        //TODO make this not shit dude bro homie
-        CheckBoxTreeItem<String> imdbNode = new CheckBoxTreeItem<>("IMDB Rating");
-        imdbNode.getChildren().addAll(
-                new CheckBoxTreeItem<>("0.0 - 0.9"),
-                new CheckBoxTreeItem<>("1.0 - 1.9"),
-                new CheckBoxTreeItem<>("2.0 - 2.9"),
-                new CheckBoxTreeItem<>("3.0 - 3.9"),
-                new CheckBoxTreeItem<>("4.0 - 4.9"),
-                new CheckBoxTreeItem<>("5.0 - 5.9"),
-                new CheckBoxTreeItem<>("6.0 - 6.9"),
-                new CheckBoxTreeItem<>("7.0 - 7.9"),
-                new CheckBoxTreeItem<>("8.0 - 8.9"),
-                new CheckBoxTreeItem<>("9.0 - 10.0")
-        );
-        //TODO make this not shit dude bro homie
-        CheckBoxTreeItem<String> personalRatingNode = new CheckBoxTreeItem<>("Personal Rating");
-        personalRatingNode.getChildren().addAll(
-                new CheckBoxTreeItem<>("0.0 - 0.9"),
-                new CheckBoxTreeItem<>("1.0 - 1.9"),
-                new CheckBoxTreeItem<>("2.0 - 2.9"),
-                new CheckBoxTreeItem<>("3.0 - 3.9"),
-                new CheckBoxTreeItem<>("4.0 - 4.9"),
-                new CheckBoxTreeItem<>("5.0 - 5.9"),
-                new CheckBoxTreeItem<>("6.0 - 6.9"),
-                new CheckBoxTreeItem<>("7.0 - 7.9"),
-                new CheckBoxTreeItem<>("8.0 - 8.9"),
-                new CheckBoxTreeItem<>("9.0 - 10.0")
-        );
-        root.getChildren().addAll(categoriesNode, imdbNode, personalRatingNode);
-        //sets the root of the treeView and hides it.
-        filterBox.setRoot(root);
-        filterBox.setShowRoot(false);
     }
 
     public void applyFiltersAndSearch() throws MovieOperationException {
