@@ -8,38 +8,62 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import org.controlsfx.control.CheckTreeView?>
 
-
-<AnchorPane prefHeight="501.0" prefWidth="966.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.MainController">
+<AnchorPane prefHeight="468.0" prefWidth="944.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.MainController">
    <children>
-      <ImageView fx:id="imgPoster" fitHeight="177.0" fitWidth="247.0" layoutX="668.0" layoutY="62.0" pickOnBounds="true" preserveRatio="true" />
-      <Button fx:id="btnPlayMovie" layoutX="680.0" layoutY="429.0" mnemonicParsing="false" onAction="#handlePlayMovie" text="play" />
-      <Button fx:id="btnAddMovie" layoutX="176.0" layoutY="429.0" mnemonicParsing="false" onAction="#handleAddMovie" text="Create a movie" />
-      <Button fx:id="btnEditMovie" layoutX="314.0" layoutY="429.0" mnemonicParsing="false" onAction="#handleEditMovie" text="Edit a movie" />
-      <Button fx:id="btnDeleteMovie" layoutX="416.0" layoutY="429.0" mnemonicParsing="false" onAction="#handleDeleteMovie" text="Remove a movie" />
-      <TextField fx:id="txtSearch" alignment="TOP_CENTER" layoutX="272.0" layoutY="26.0" prefHeight="25.0" prefWidth="247.0" promptText="Search for a movie" />
-      <HBox layoutX="14.0" layoutY="62.0" prefHeight="366.0" prefWidth="622.0">
+      <TextField fx:id="txtSearch" alignment="TOP_CENTER" layoutX="275.0" layoutY="14.0" prefHeight="25.0" prefWidth="247.0" promptText="Search for a movie" />
+      <VBox layoutX="14.0" layoutY="48.0" prefHeight="420.0" prefWidth="621.0">
          <children>
-            <CheckTreeView fx:id="filterBox" minWidth="160.0" prefHeight="366.0" prefWidth="160.0" />
-            <TableView fx:id="tblMovies" maxHeight="900.0" maxWidth="1600.0" prefHeight="366.0" prefWidth="626.0">
-              <columns>
-                <TableColumn fx:id="colTitle" prefWidth="165.0" text="Title" />
-                <TableColumn fx:id="colIMDB" minWidth="0.0" prefWidth="62.0" text="IMDB" />
-                  <TableColumn fx:id="colPersonalRating" prefWidth="98.0" text="Personal Rating" />
-                  <TableColumn fx:id="colYear" prefWidth="97.0" text="Year" />
-                  <TableColumn fx:id="colCategory" prefWidth="169.0" text="Category" />
-              </columns>
-               <columnResizePolicy>
-                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-            </TableView>
+            <HBox prefHeight="366.0" prefWidth="622.0">
+               <children>
+                  <CheckTreeView fx:id="filterBox" minWidth="160.0" prefHeight="366.0" prefWidth="160.0" />
+                  <TableView fx:id="tblMovies" maxHeight="900.0" maxWidth="1600.0" prefHeight="366.0" prefWidth="626.0">
+                    <columns>
+                      <TableColumn fx:id="colTitle" prefWidth="165.0" text="Title" />
+                      <TableColumn fx:id="colIMDB" minWidth="0.0" prefWidth="62.0" text="IMDB" />
+                        <TableColumn fx:id="colPersonalRating" prefWidth="98.0" text="Personal Rating" />
+                        <TableColumn fx:id="colYear" prefWidth="97.0" text="Year" />
+                        <TableColumn fx:id="colCategory" prefWidth="169.0" text="Category" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+            </HBox>
+            <AnchorPane prefHeight="46.0" prefWidth="622.0">
+               <children>
+                  <Button fx:id="btnAddMovie" layoutX="242.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleAddMovie" text="Create a movie" />
+                  <Button fx:id="btnEditMovie" layoutX="392.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleEditMovie" text="Edit a movie" />
+                  <Button fx:id="btnDeleteMovie" layoutX="518.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleDeleteMovie" text="Remove a movie" />
+               </children>
+            </AnchorPane>
          </children>
-      </HBox>
-      <Label fx:id="lblTitle" layoutX="666.0" layoutY="245.0" text="TITLE" />
-      <Label fx:id="lblCategories" layoutX="664.0" layoutY="298.0" text="TAGS - CATEGORIES" />
-      <Label fx:id="lblIMDB" layoutX="662.0" layoutY="350.0" text="IMDB RATING" />
-      <Label fx:id="lblPersonal" layoutX="772.0" layoutY="350.0" text="PERSONAL RATING" />
-      <Label fx:id="lblYear" layoutX="666.0" layoutY="267.0" text="YEAR" />
+      </VBox>
+      <VBox layoutX="652.0" layoutY="48.0" prefHeight="366.0" prefWidth="266.0">
+         <children>
+            <AnchorPane prefHeight="198.0" prefWidth="266.0">
+               <children>
+                  <ImageView fx:id="imgPoster" fitHeight="198.0" fitWidth="266.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="128.0" prefWidth="266.0">
+               <children>
+                  <Label fx:id="lblTitle" layoutX="60.0" layoutY="91.0" text="TITLE" />
+                  <Label fx:id="lblCategories" layoutX="124.0" layoutY="36.0" text="TAGS - CATEGORIES" />
+                  <Label fx:id="lblIMDB" layoutY="36.0" text="IMDB RATING" />
+                  <Label fx:id="lblPersonal" layoutX="2.0" layoutY="64.0" text="PERSONAL RATING" />
+                  <Label fx:id="lblYear" layoutX="150.0" layoutY="82.0" text="YEAR" />
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="42.0" prefWidth="266.0">
+               <children>
+                  <Button fx:id="btnPlayMovie" mnemonicParsing="false" onAction="#handlePlayMovie" text="play" />
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>
