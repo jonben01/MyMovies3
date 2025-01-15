@@ -90,8 +90,9 @@ public class MainController implements Initializable {
         try {
             populateFilterBox();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("problem populating filterbox in initialize", e);
         }
+
         filterBox.getCheckModel().getCheckedItems().addListener((ListChangeListener<TreeItem<String>>) c -> {
             while (c.next()) {
                 //TODO figure out if this runs well like this, what happens if you uncheck all at the same time?
@@ -245,7 +246,7 @@ public class MainController implements Initializable {
         return alert.showAndWait();
     }
 
-    public MainController() throws Exception {
+    public MainController() throws SQLException, IOException {
             categoryModel = new CategoryModel();
             movieModel = new MovieModel();
     }

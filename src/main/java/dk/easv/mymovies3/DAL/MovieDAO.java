@@ -96,7 +96,6 @@ public class MovieDAO implements IMovieDataAccess {
             return new ArrayList<>(movieMap.values());
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new SQLException("Could not get movies from database", ex);
         }
     }

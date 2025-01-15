@@ -18,7 +18,7 @@ public class MovieModel {
     private MovieManager movieManager;
 
 
-    public MovieModel() throws Exception {
+    public MovieModel() throws IOException, SQLException {
         movieManager = new MovieManager();
         moviesToBeViewed = FXCollections.observableArrayList();
         moviesToBeViewed.addAll(movieManager.getAllMovies());

@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class NewCategoryController {
-    CategoryModel categoryModel;
+    private CategoryModel categoryModel;
     @FXML
     private TextField txtCategory;
     @FXML
