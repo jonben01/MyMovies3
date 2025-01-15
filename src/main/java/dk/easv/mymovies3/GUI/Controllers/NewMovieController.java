@@ -257,6 +257,18 @@ public class NewMovieController implements Initializable {
         lstCategories.setCellFactory(param -> new ListCell<>() {
             private final CheckBox checkBox = new CheckBox();
 
+            /**
+             * updateItem() defines what should be shown in each cell of the listView. In our case it fills the cells
+             * with Category objects or leaves it empty. Using it allows us to customize the cells more, such as using
+             * checkboxes in each ListCell.
+             *
+             * uses the non-overriden updateItem() to make sure proper behavior, like emptying cells before reuse.
+             *
+             * @param category The new item for the cell.
+             * @param empty whether or not this cell represents data from the list. If it
+             *        is empty, then it does not represent any domain data, but is a cell
+             *        being used to render an "empty" row.
+             */
             protected void updateItem(Category category, boolean empty) {
                 //calls the updateIem method from the Cell class (super)
                 super.updateItem(category, empty);
@@ -265,7 +277,7 @@ public class NewMovieController implements Initializable {
                     setText(null);
                 } else {
                     checkBox.setText(category.getCategoryName());
-                    checkBox.setSelected(category.isSelected());
+                    //checkBox.setSelected(category.isSelected());
                     checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
                         category.setSelected(newValue);
                     });
