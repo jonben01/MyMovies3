@@ -226,7 +226,7 @@ public class NewMovieController implements Initializable {
 
 
     @FXML
-    private void OnNewCategoryClick(ActionEvent actionEvent) {
+    private void onNewCategoryClick(ActionEvent actionEvent) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newCategoryView.fxml"));
             Parent root = loader.load();
@@ -330,7 +330,5 @@ public class NewMovieController implements Initializable {
         allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
         lstCategories.setItems(allCategories);
     }
-
-
 
 }
