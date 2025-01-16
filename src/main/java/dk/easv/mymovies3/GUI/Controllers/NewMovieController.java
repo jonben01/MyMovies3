@@ -56,12 +56,14 @@ public class NewMovieController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
-        } catch (SQLException e) {
+            refreshCategoryList();
+            //allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
+        } catch (MovieOperationException e) {
             throw new RuntimeException("yikes - new movie controller, in initialize",e);
         }
-        lstCategories.setItems(allCategories);
+        //lstCategories.setItems(allCategories);
 
+        // Set up ListView cell factory for categories
         lstCategories.setCellFactory(param -> new ListCell<>() {
             private final CheckBox checkBox = new CheckBox();
 
@@ -77,18 +79,24 @@ public class NewMovieController implements Initializable {
              *        is empty, then it does not represent any domain data, but is a cell
              *        being used to render an "empty" row.
              */
+
             protected void updateItem(Category category, boolean empty) {
                 //calls the updateIem method from the Cell class (super)
                 super.updateItem(category, empty);
+
                 if (empty || category == null) {
                     setGraphic(null);
                     setText(null);
                 } else {
+                    // Reset the checkbox text and binding
                     checkBox.setText(category.getCategoryName());
-                    checkBox.setSelected(category.isSelected());
+                    checkBox.selectedProperty().unbind(); // Unbind any previous bindings
+                    checkBox.setSelected(category.isSelected()); // Set the initial state
                     checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                        category.setSelected(newValue);
+                        category.setSelected(newValue); // Update the Category object
                     });
+
+                    // Set the graphic of the cell to the checkbox
                     setGraphic(checkBox);
                 }
             }
@@ -157,6 +165,7 @@ public class NewMovieController implements Initializable {
             if (isUpdateMode) {
                 // Update existing movie
                 updateMovie(title, imdbRating, personalRating, year, newFilePath, selectedCategories);
+                refreshCategoryList();
 
             } else {
                 createMovie(title, imdbRating, personalRating, year, newFilePath, selectedCategories);
@@ -225,7 +234,7 @@ public class NewMovieController implements Initializable {
         return selectedCategories;
     }
 
-    //Allow update a movie
+    //Allows update a movie
     private void updateMovie(String title, Double imdbRating, Double personalRating, int year, String filePath, ArrayList<Category> selectedCategories) throws MovieOperationException {
 
         try {
@@ -236,10 +245,13 @@ public class NewMovieController implements Initializable {
             movieToUpdate.setFilePath(filePath);
 
             movieModel.updateMovie(movieToUpdate);
+
             setCategories(movieToUpdate);
+
         } catch (Exception e) {
             throw new MovieOperationException("Issue in updateMovie method", e);
         }
+
     }
 
     private void createMovie(String title, Double imdbRating, Double personalRating, int year, String filePath, ArrayList<Category> selectedCategories) throws Exception {
@@ -250,22 +262,46 @@ public class NewMovieController implements Initializable {
 
     private void setCategories(Movie movie) throws MovieOperationException {
 try {
-    //Clear existing categories
-    categoryModel.clearCategoriesForMovie(movie.getId());
+    // Get currently selected categories
+    List<Category> selectedCategories = getSelectedCategories();
 
-    List<Category> selectedCategories = new ArrayList<>();
-    for (Category category : allCategories) {
-        if (category.isSelected()) {
-            categoryModel.addCategoryToMovie(movie.getId(), category.getId());
-            selectedCategories.add(category);
+    // Compare with existing categories in the movie
+    List<Category> existingCategories = movie.getCategories();
+
+
+    List<Category> categoriesToAdd = new ArrayList<>();
+
+
+    for (Category category : selectedCategories) {
+        if (!existingCategories.contains(category)) {
+            categoriesToAdd.add(category);
         }
     }
-    // Update the movie's categories in the model
+
+    //Determine which categories to remove
+    List<Category> categoriesToRemove = new ArrayList<>();
+    for (Category category : existingCategories) {
+        if (!selectedCategories.contains(category)) {
+            categoriesToRemove.add(category);
+        }
+    }
+
+    // Add and remove categories in the database
+    for (Category category : categoriesToRemove) {
+        categoryModel.clearCategoriesForMovie(movie.getId());
+    }
+    for (Category category : categoriesToAdd) {
+        categoryModel.addCategoryToMovie(movie.getId(), category.getId());
+    }
+
+
+    // Updates the movie object
     movie.setCategories(selectedCategories);
-    controller.updateMovieCategories(movie); // Notify MainController to refresh
+
 } catch (SQLException e) {
     throw new MovieOperationException("Failed while setting a category", e);
 }
+
     }
 
     public void alertMethod(String alertString, Alert.AlertType alertType) {
@@ -305,6 +341,12 @@ try {
         this.isUpdateMode = isUpdateMode;
         this.movieToUpdate = movieToUpdate;
 
+        try {
+            refreshCategoryList(); // Ensure the category list is up-to-date.
+        } catch (MovieOperationException e) {
+            throw new RuntimeException("Failed to refresh categories in setMode", e);
+        }
+
         if (isUpdateMode) {
             // Populate fields with the movie's current details
             txtTitle.setText(movieToUpdate.getMovieTitle());
@@ -336,17 +378,6 @@ try {
         Stage stage = (Stage) btnCancelMovie.getScene().getWindow();
         stage.close(); }
 
-    public void updateCategories() throws MovieOperationException {
-
-        try {
-            lstCategories.getItems().clear();
-            allCategories.clear();
-            allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
-            lstCategories.setItems(allCategories);
-        } catch (SQLException e) {
-            throw new MovieOperationException("Failed while updating categories in view",e);
-        }
-    }
 
     //custom exception method
     public class MovieOperationException extends RuntimeException {
@@ -354,4 +385,18 @@ try {
             super(message, cause);
         }
     }
+
+    public void refreshCategoryList() throws MovieOperationException {
+        try {
+            allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
+
+            // Update ListView items
+            lstCategories.setItems(allCategories);
+            lstCategories.refresh();
+        } catch (SQLException e) {
+            throw new MovieOperationException("Failed while refreshing category list", e);
+        }
+    }
+
+
 }

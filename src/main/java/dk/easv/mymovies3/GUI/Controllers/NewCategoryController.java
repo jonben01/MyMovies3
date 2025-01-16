@@ -39,8 +39,12 @@ public class NewCategoryController {
             if (!txtCategory.getText().isEmpty()) {
                 Category newCategory = new Category(txtCategory.getText());
                 categoryModel.createCategory(newCategory);
+
+                if(newMovieController != null) {
+                    newMovieController.refreshCategoryList(); // Update category list in the movie controller
+                }
+
                 UpdateCategories();
-                newMovieController.updateCategories();
             }
         } catch (SQLException e) {
             throw new SQLException("Failed while adding category.", e);
@@ -54,8 +58,12 @@ try {
         // TODO: Implement this shit..
         Category category = listCategory.getSelectionModel().getSelectedItem();
         categoryModel.DeleteCategory(category);
+
+        if(newMovieController != null) {
+            newMovieController.refreshCategoryList(); // Update category list in the movie controller
+        }
+        UpdateCategories();
     }
-    UpdateCategories();
 } catch (SQLException e) {
     throw new SQLException("Failed while deleting category", e);
 }
