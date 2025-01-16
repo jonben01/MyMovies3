@@ -57,8 +57,8 @@ public class NewMovieController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             refreshCategoryList();
-            //allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
-        } catch (MovieOperationException e) {
+            allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
+        } catch (SQLException e) {
             throw new RuntimeException("yikes - new movie controller, in initialize",e);
         }
         //lstCategories.setItems(allCategories);
@@ -262,42 +262,19 @@ public class NewMovieController implements Initializable {
 
     private void setCategories(Movie movie) throws MovieOperationException {
 try {
-    // Get currently selected categories
-    List<Category> selectedCategories = getSelectedCategories();
+    //Clear existing categories
+    categoryModel.clearCategoriesForMovie(movie.getId());
 
-    // Compare with existing categories in the movie
-    List<Category> existingCategories = movie.getCategories();
-
-
-    List<Category> categoriesToAdd = new ArrayList<>();
-
-
-    for (Category category : selectedCategories) {
-        if (!existingCategories.contains(category)) {
-            categoriesToAdd.add(category);
+    List<Category> selectedCategories = new ArrayList<>();
+    for (Category category : allCategories) {
+        if (category.isSelected()) {
+            categoryModel.addCategoryToMovie(movie.getId(), category.getId());
+            selectedCategories.add(category);
         }
     }
-
-    //Determine which categories to remove
-    List<Category> categoriesToRemove = new ArrayList<>();
-    for (Category category : existingCategories) {
-        if (!selectedCategories.contains(category)) {
-            categoriesToRemove.add(category);
-        }
-    }
-
-    // Add and remove categories in the database
-    for (Category category : categoriesToRemove) {
-        categoryModel.clearCategoriesForMovie(movie.getId());
-    }
-    for (Category category : categoriesToAdd) {
-        categoryModel.addCategoryToMovie(movie.getId(), category.getId());
-    }
-
-
-    // Updates the movie object
+    // Update the movie's categories in the model
     movie.setCategories(selectedCategories);
-
+    controller.updateMovieCategories(movie); // Notify MainController to refresh
 } catch (SQLException e) {
     throw new MovieOperationException("Failed while setting a category", e);
 }
