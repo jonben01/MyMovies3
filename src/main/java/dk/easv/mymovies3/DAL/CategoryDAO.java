@@ -45,26 +45,6 @@ public class CategoryDAO implements ICategoryDataAccess {
         }
     }
 
-    /*@Override
-    public ArrayList<Category> getAllCategoriesJun() throws SQLException {
-        ArrayList<Category> allCategoriesJun = new ArrayList<>();
-        try (Connection conn = connector.getConnection();
-             Statement stmt = conn.createStatement()) {
-
-            String sql = "SELECT Movie_Id, Category_Id FROM CatMov_Junction";
-            ResultSet rs = stmt.executeQuery(sql);
-
-            while (rs.next()) {
-                int id = rs.getInt("Movie_Id");
-                String categoryName = rs.getString("Category_Id");
-                allCategoriesJun.add(new Category(id, categoryName));
-            }
-            return allCategoriesJun;
-        } catch (SQLException e) {
-            throw new SQLException("Could not get all categoriesJun from database", e);
-        }
-    }*/
-
     @Override
     public void deleteCategory(Category category) throws SQLException {
         try (Connection conn = connector.getConnection();

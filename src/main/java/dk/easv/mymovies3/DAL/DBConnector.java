@@ -30,15 +30,4 @@ public class DBConnector {
     public Connection getConnection() throws SQLServerException {
         return dataSource.getConnection();
     }
-
-    /* just to check db connection.
-    public static void main(String[] args) throws Exception {
-        DBConnector databaseConnector = new DBConnector();
-
-        try (Connection connection = databaseConnector.getConnection()) {
-            System.out.println("Is it open? " + !connection.isClosed());
-        }
-    }
-
-     */
 }

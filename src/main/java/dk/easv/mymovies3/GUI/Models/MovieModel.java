@@ -1,6 +1,5 @@
 package dk.easv.mymovies3.GUI.Models;
 
-import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BE.Movie;
 import dk.easv.mymovies3.BLL.MovieManager;
 import javafx.collections.FXCollections;
@@ -9,7 +8,6 @@ import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Set;
 
 public class MovieModel {

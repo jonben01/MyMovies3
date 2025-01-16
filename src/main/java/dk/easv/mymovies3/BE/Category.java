@@ -1,7 +1,5 @@
 package dk.easv.mymovies3.BE;
 
-import javafx.beans.property.BooleanProperty;
-
 import java.util.Objects;
 
 public class Category {
@@ -9,7 +7,7 @@ public class Category {
     private int id;
     private String categoryName;
     private boolean isSelected;
-    private BooleanProperty selected;
+
 
     public String getCategoryName() {return categoryName;}
     public void setCategoryName(String categoryName) {this.categoryName = categoryName;}

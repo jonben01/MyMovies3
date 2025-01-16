@@ -43,7 +43,6 @@ public class NewMovieController implements Initializable {
     private ObservableList<Category> allCategories = null;
     private NewCategoryController newCategoryController;
 
-
     private MovieModel movieModel;
     private CategoryModel categoryModel;
     private MainController controller;
@@ -96,7 +95,6 @@ public class NewMovieController implements Initializable {
         });
     }
 
-
     public NewMovieController() throws Exception {
         movieModel = new MovieModel();
         categoryModel = new CategoryModel();
@@ -113,10 +111,6 @@ public class NewMovieController implements Initializable {
 
         }
     }
-
-
-
-
 
     public void handleAddMovie(ActionEvent actionEvent) throws MovieOperationException {
 
@@ -160,8 +154,6 @@ public class NewMovieController implements Initializable {
 
             ArrayList<Category> selectedCategories = getSelectedCategories();
 
-
-
             if (isUpdateMode) {
                 // Update existing movie
                 updateMovie(title, imdbRating, personalRating, year, newFilePath, selectedCategories);
@@ -192,7 +184,6 @@ public class NewMovieController implements Initializable {
         return true;
 
     }
-
 
     private String handleFileCopy() throws MovieOperationException {
 
@@ -341,7 +332,6 @@ try {
         }
     }
 
-
     public void handleCancelMovie(ActionEvent actionEvent) {
         Stage stage = (Stage) btnCancelMovie.getScene().getWindow();
         stage.close(); }
@@ -364,5 +354,4 @@ try {
             super(message, cause);
         }
     }
-
 }

@@ -85,6 +85,4 @@ try {
             throw new SQLException("Failed while updating category", e);
         }
     }
-
-
-    }
+}

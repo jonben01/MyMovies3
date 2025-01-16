@@ -14,12 +14,9 @@ public class CategoryModel {
         CategoryManager categoryManager;
 
     private final ObservableList<Category> categories = FXCollections.observableArrayList();
-   // private ObservableList<Category> categoriesToBeViewed;
 
         public CategoryModel() throws IOException, SQLException {
             categoryManager = new CategoryManager();
-            /*categoriesToBeViewed = FXCollections.observableArrayList();
-            categoriesToBeViewed.addAll(categoryManager.getAllCategoriesJun());*/
         }
 
     public ObservableList<Category> getObservableCategories() {

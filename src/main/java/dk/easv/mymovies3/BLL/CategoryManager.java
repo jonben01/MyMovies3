@@ -25,10 +25,6 @@ public class CategoryManager {
         return categories;
     }
 
-    /*public ArrayList<Category> getAllCategoriesJun() throws SQLException {
-        ArrayList<Category> categoriesJun = categoryDAO.getAllCategoriesJun();
-        return categoriesJun;
-    }*/
 
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
         categoryDAO.addCategoryToMovie(movieId, categoryId);

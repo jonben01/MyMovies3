@@ -172,9 +172,6 @@ public class MovieDAO implements IMovieDataAccess {
             }
         }
 
-
-
-
     @Override
     public void deleteMovie(Movie movie) throws SQLException {
         try (Connection conn = connector.getConnection();
@@ -184,6 +181,6 @@ public class MovieDAO implements IMovieDataAccess {
         } catch(SQLException ex){
             ex.printStackTrace();
             throw new SQLException("Could not remove movie from database.", ex);
-    }
+        }
     }
 }
