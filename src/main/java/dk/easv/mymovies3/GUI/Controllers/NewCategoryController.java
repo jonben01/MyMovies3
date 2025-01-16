@@ -36,12 +36,11 @@ public class NewCategoryController {
     private void handleAddCategory(ActionEvent actionEvent) throws SQLException {
 
         try {
-            if (txtCategory != null) {
+            if (!txtCategory.getText().isEmpty()) {
                 Category newCategory = new Category(txtCategory.getText());
                 categoryModel.createCategory(newCategory);
                 UpdateCategories();
                 newMovieController.updateCategories();
-
             }
         } catch (SQLException e) {
             throw new SQLException("Failed while adding category.", e);

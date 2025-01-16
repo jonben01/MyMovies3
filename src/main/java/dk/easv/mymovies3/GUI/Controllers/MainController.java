@@ -51,7 +51,10 @@ public class MainController implements Initializable {
     @FXML public Label lblCategories;
     @FXML public Label lblIMDB;
     @FXML public Label lblPersonal;
-    @FXML public Label lblYear;
+    @FXML public Label lblLastOpened;
+    @FXML public Label lblHiddenIMDB;
+    @FXML public Label lblHiddenPersonal;
+    @FXML public Label lblHiddenLastWatched;
     @FXML private TextField txtSearch;
     @FXML private CheckTreeView<String> filterBox;
     private MovieModel movieModel;
@@ -71,7 +74,7 @@ public class MainController implements Initializable {
     private AnchorPane imgAnchor;
     private static final String API_KEY = "AIzaSyBp5qkHmF0mbmBRcUjjr5krLRoNStZqLHE"; // Replace with your API key
     private static final String CX_ID = "83e7d3530ea0f428e";   // Replace with your CSE ID
-
+    private Movie previousMovie = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -130,14 +133,21 @@ public class MainController implements Initializable {
                 }
             }
         });
+        lblHiddenIMDB.setVisible(false);
+        lblHiddenPersonal.setVisible(false);
+        lblHiddenLastWatched.setVisible(false);
+
         tblMovies.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 List<Category> movieCategories = newValue.getCategories();
                 StringBuilder sb = new StringBuilder();
+                lblHiddenIMDB.setVisible(true);
+                lblHiddenPersonal.setVisible(true);
+                lblHiddenLastWatched.setVisible(true);
 
                 for (int i = 0; i < movieCategories.size(); i++) {
                     sb.append(movieCategories.get(i).toString());
-                    if ((i + 1) % 2 == 0) {
+                    if ((i + 1) % 3 == 0) {
                         sb.append("\n");
                     } else if (i < movieCategories.size() - 1) {
                         sb.append(", ");
@@ -145,11 +155,15 @@ public class MainController implements Initializable {
                     
                 }
 
-                lblTitle.setText(newValue.getMovieTitle());
+                lblTitle.setText(newValue.getMovieTitle() + " (" + newValue.getMovieYear() + ") ");
                 lblCategories.setText(sb.toString());
                 lblIMDB.setText(newValue.getImdbRating().toString());
                 lblPersonal.setText(newValue.getPersonalRating().toString());
-                lblYear.setText(String.valueOf(newValue.getMovieYear()));
+                if (newValue.getLastOpenedDate() == null) {
+                    lblLastOpened.setText("Never watched");
+                } else {
+                    lblLastOpened.setText(String.valueOf(newValue.getLastOpenedDate()));
+                }
             }
         });
         //workaround debouncer for smoother searching.
@@ -211,7 +225,6 @@ public class MainController implements Initializable {
                 stage.show();
             } catch (IOException e) {
 
-
                 alertMethod("An error occurred while loading the Edit Movie view. Please try again later.", Alert.AlertType.ERROR);
                 throw new MovieOperationException("Failed to load the edit movie view.", e);
             }
@@ -221,7 +234,7 @@ public class MainController implements Initializable {
     @FXML
     private void onTableViewClick(MouseEvent mouseEvent) throws IOException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
-        if (selectedMovie != null) {
+        if (selectedMovie != null && previousMovie != selectedMovie ) {
             // Fetch and display the movie poster
             getPoster(selectedMovie);
 
@@ -234,6 +247,7 @@ public class MainController implements Initializable {
             // Add listeners to re-center the ImageView when the AnchorPane resizes
             imgAnchor.widthProperty().addListener((obs, oldVal, newVal) -> centerImageView());
             imgAnchor.heightProperty().addListener((obs, oldVal, newVal) -> centerImageView());
+            previousMovie = selectedMovie;
         }
     }
 
