@@ -285,10 +285,6 @@ try {
         alert.showAndWait();
     }
 
-
-
-
-
     @FXML
     private void onNewCategoryClick(ActionEvent actionEvent) {
         try {
@@ -308,8 +304,6 @@ try {
             throw new RuntimeException(e);
         }
     }
-
-
 
     public void setMovieModel(MovieModel movieModel) {
         this.movieModel = movieModel;

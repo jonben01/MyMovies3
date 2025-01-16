@@ -25,7 +25,6 @@ public class MovieModel {
 
     }
 
-
     public ObservableList<Movie> getObservableMovies() {
         return moviesToBeViewed;
     }
@@ -44,17 +43,17 @@ public class MovieModel {
         return null;
     }
 
-    public void deleteMovie(Movie movieToBeDeleted) throws Exception {
+    public void deleteMovie(Movie movieToBeDeleted) throws SQLException {
         movieManager.DeleteMovie(movieToBeDeleted);
         UpdateList();
     }
 
-    public void UpdateList() throws Exception {
+    public void UpdateList() throws SQLException {
         moviesToBeViewed.clear();
         moviesToBeViewed.addAll(movieManager.getAllMovies());
     }
 
-    public void updateMovie(Movie movie) throws Exception {
+    public void updateMovie(Movie movie) throws SQLException {
         movieManager.updateMovie(movie); // Update movie in the database
 
         for (int i = 0; i < moviesToBeViewed.size(); i++) {
@@ -66,7 +65,6 @@ public class MovieModel {
         }
     }
 
-
     public ObservableList<Movie> applyFiltersAndSearch(String searchQuery,
                                               Set<String> selectedCategories,
                                               Set<String> selectedImdbRatings,
@@ -77,22 +75,4 @@ public class MovieModel {
     public void setLastOpened(Movie movie) throws SQLException {
         movieManager.setLastOpened(movie);
     }
-
-
-//TODO implement this
-
-/* needed for when fileAlreadyExists needs to be handled in ADD MOVIE method - maincontroller.
-    public Movie getMovieByFilePath(String filePath) {
-
-        for (Movie movie : movieManager.getAllMovies()) {
-
-            if (movie.getFilePath().equals(filePath)) {
-
-                return movie;
-            }
-        }
-        return null;
-    }
-
- */
 }

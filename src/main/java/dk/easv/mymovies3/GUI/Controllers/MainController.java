@@ -6,6 +6,7 @@ import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -46,6 +47,11 @@ import java.sql.Date;
 import java.util.List;
 
 public class MainController implements Initializable {
+    @FXML public Label lblTitle;
+    @FXML public Label lblCategories;
+    @FXML public Label lblIMDB;
+    @FXML public Label lblPersonal;
+    @FXML public Label lblYear;
     @FXML private TextField txtSearch;
     @FXML private CheckTreeView<String> filterBox;
     private MovieModel movieModel;
@@ -124,6 +130,28 @@ public class MainController implements Initializable {
                 }
             }
         });
+        tblMovies.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                List<Category> movieCategories = newValue.getCategories();
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = 0; i < movieCategories.size(); i++) {
+                    sb.append(movieCategories.get(i).toString());
+                    if ((i + 1) % 2 == 0) {
+                        sb.append("\n");
+                    } else if (i < movieCategories.size() - 1) {
+                        sb.append(", ");
+                    }
+                    
+                }
+
+                lblTitle.setText(newValue.getMovieTitle());
+                lblCategories.setText(sb.toString());
+                lblIMDB.setText(newValue.getImdbRating().toString());
+                lblPersonal.setText(newValue.getPersonalRating().toString());
+                lblYear.setText(String.valueOf(newValue.getMovieYear()));
+            }
+        });
         //workaround debouncer for smoother searching.
         searchPause = new PauseTransition(Duration.millis(300));
         searchPause.setOnFinished(event -> {
@@ -156,11 +184,7 @@ public class MainController implements Initializable {
 
         } catch (IOException e) {
 
-            System.err.println("Error adding movie: " + e.getMessage());
-            e.printStackTrace();
-
             alertMethod("An error occurred while adding Movie. Please try again later.", Alert.AlertType.ERROR);
-
             throw new MovieOperationException("Failed to add movie. ", e);
         }
     }
@@ -195,7 +219,7 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void onTableViewClick(MouseEvent mouseEvent) {
+    private void onTableViewClick(MouseEvent mouseEvent) throws IOException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
         if (selectedMovie != null) {
             // Fetch and display the movie poster
@@ -203,10 +227,6 @@ public class MainController implements Initializable {
 
             // Clear existing AnchorPane constraints
             AnchorPane.clearConstraints(imgPoster);
-
-            // Set the fit width and height to a percentage of the AnchorPane's size
-            imgPoster.setFitWidth(imgAnchor.getWidth() * 0.95); // 95% of AnchorPane width
-            imgPoster.setFitHeight(imgAnchor.getHeight() * 0.95); // 95% of AnchorPane height
 
             // Center the ImageView within the AnchorPane
             centerImageView();
@@ -393,7 +413,7 @@ public class MainController implements Initializable {
         }
     }
 
-    public void handlePlayMovie(ActionEvent actionEvent) throws Exception {
+    public void handlePlayMovie(ActionEvent actionEvent) throws SQLException {
         Movie movieFile = tblMovies.getSelectionModel().getSelectedItem();
         File file = new File (movieFile.getFilePath());
         if (!file.exists()) {
@@ -417,58 +437,54 @@ public class MainController implements Initializable {
     }
 
     //Allows update categories view at the same time as movie was updated
-    public void updateMovieCategories(Movie updatedMovie) throws RuntimeException {
+    public void updateMovieCategories(Movie updatedMovie) {
         try {
             movieModel.updateMovie(updatedMovie); // Update movie in model
-        } catch (Exception e) {
-            throw new RuntimeException("An error occurred while updating movie categories", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("error in updateMovieCategories method ",e);
         }
-
     }
 
-    private String fetchFirstImageUrl(String query) {
-        try {
-            String urlString = String.format(
-                    "https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s&searchType=image",
-                    URLEncoder.encode(query, "UTF-8"),
-                    CX_ID,
-                    API_KEY
-            );
+    private String fetchFirstImageUrl(String query) throws IOException {
 
-            System.out.println("Request URL: " + urlString);
+        String urlString = String.format(
+                "https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s&searchType=image",
+                URLEncoder.encode(query, "UTF-8"),
+                CX_ID,
+                API_KEY
+        );
+        System.out.println("Request URL: " + urlString);
 
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
 
-            int responseCode = conn.getResponseCode();
-            if (responseCode == 200) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String inputLine;
+        int responseCode = conn.getResponseCode();
+        if (responseCode == 200) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String inputLine;
 
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                JSONObject jsonObject = JSONUtil.parseObj(response.toString());
-                if (jsonObject.containsKey("items")) {
-                    JSONArray items = jsonObject.getJSONArray("items");
-                    if (!items.isEmpty()) {
-                        return String.valueOf(items.getJSONObject(0).get("link"));
-                    }
-                }
-            } else {
-                System.out.println("Error: " + responseCode + " " + conn.getResponseMessage());
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            in.close();
+
+            JSONObject jsonObject = JSONUtil.parseObj(response.toString());
+            if (jsonObject.containsKey("items")) {
+                JSONArray items = jsonObject.getJSONArray("items");
+                if (!items.isEmpty()) {
+                    return String.valueOf(items.getJSONObject(0).get("link"));
+                }
+            }
+        } else {
+            System.out.println("Error: " + responseCode + " " + conn.getResponseMessage());
         }
+
         return null;
     }
 
-    private void getPoster(Movie movie) {
+    private void getPoster(Movie movie) throws IOException {
         String query = movie.getMovieTitle() + " movie poster " + movie.getMovieYear();
         String imageUrl = fetchFirstImageUrl(query);
 

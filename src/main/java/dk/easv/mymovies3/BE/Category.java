@@ -39,5 +39,10 @@ public class Category {
         Category category = (Category) obj;
         return id == category.id && Objects.equals(categoryName, category.getCategoryName());
     }
+
+    @Override
+    public String toString() {
+        return categoryName;
+    }
 }
 

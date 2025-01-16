@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -12,62 +13,74 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.controlsfx.control.CheckTreeView?>
 
-<AnchorPane prefHeight="468.0" prefWidth="944.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.MainController">
+<AnchorPane minHeight="550.0" minWidth="1000.0" prefHeight="550.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.MainController">
    <children>
-      <TextField fx:id="txtSearch" alignment="TOP_CENTER" layoutX="275.0" layoutY="14.0" prefHeight="25.0" prefWidth="247.0" promptText="Search for a movie" />
-      <VBox layoutY="48.0" maxHeight="800.0" maxWidth="1900.0" prefHeight="420.0" prefWidth="944.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="48.0">
+      <AnchorPane prefHeight="26.0" prefWidth="1000.0">
          <children>
-            <HBox maxHeight="1200.0" maxWidth="1900.0" prefHeight="374.0" prefWidth="931.0" VBox.vgrow="SOMETIMES">
+            <TextField fx:id="txtSearch" alignment="TOP_CENTER" layoutX="2.0" layoutY="5.0" prefHeight="25.0" prefWidth="247.0" promptText="Search for a movie" />
+            <Button fx:id="btnAddMovie" layoutX="252.0" layoutY="5.0" mnemonicParsing="false" onAction="#handleAddMovie" text="Create a movie" />
+         </children>
+      </AnchorPane>
+      <VBox layoutY="35.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="490.0" minWidth="1000.0" prefHeight="490.0" prefWidth="1000.0" AnchorPane.bottomAnchor="23.399999999999977" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+         <children>
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="490.0" minWidth="1000.0" prefHeight="490.0" prefWidth="1000.0" VBox.vgrow="SOMETIMES">
                <children>
-                  <CheckTreeView fx:id="filterBox" minWidth="160.0" prefHeight="366.0" prefWidth="160.0" />
-                  <TableView fx:id="tblMovies" maxHeight="900.0" maxWidth="1600.0" onMouseClicked="#onTableViewClick" prefHeight="366.0" prefWidth="626.0" HBox.hgrow="SOMETIMES">
+                  <VBox maxHeight="1.7976931348623157E308" maxWidth="160.0" minHeight="483.0" minWidth="160.0" prefHeight="483.0" prefWidth="160.0">
+                     <children>
+                        <CheckTreeView fx:id="filterBox" maxHeight="1.7976931348623157E308" maxWidth="160.0" minHeight="497.0" minWidth="160.0" prefHeight="497.0" prefWidth="160.0">
+                           <VBox.margin>
+                              <Insets right="3.0" />
+                           </VBox.margin>
+                        </CheckTreeView>
+                     </children>
+                     <HBox.margin>
+                        <Insets right="2.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <TableView fx:id="tblMovies" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="483.0" minWidth="530.0" onMouseClicked="#onTableViewClick" prefHeight="483.0" prefWidth="530.0" HBox.hgrow="SOMETIMES">
                     <columns>
-                      <TableColumn fx:id="colTitle" prefWidth="165.0" text="Title" />
-                      <TableColumn fx:id="colIMDB" minWidth="0.0" prefWidth="62.0" text="IMDB" />
-                        <TableColumn fx:id="colPersonalRating" prefWidth="98.0" text="Personal Rating" />
-                        <TableColumn fx:id="colYear" prefWidth="97.0" text="Year" />
-                        <TableColumn fx:id="colCategory" prefWidth="169.0" text="Category" />
+                      <TableColumn fx:id="colTitle" prefWidth="196.0" text="Title" />
+                      <TableColumn fx:id="colIMDB" minWidth="0.0" prefWidth="49.59991455078125" text="IMDB" />
+                        <TableColumn fx:id="colPersonalRating" prefWidth="63.20001220703125" text="My Rating" />
+                        <TableColumn fx:id="colYear" prefWidth="53.59991455078125" text="Year" />
+                        <TableColumn fx:id="colCategory" prefWidth="206.40005493164062" text="Category" />
                     </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                      </columnResizePolicy>
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
                   </TableView>
-                  <VBox maxHeight="9999.0" maxWidth="9999.0" prefHeight="366.0" prefWidth="266.0" HBox.hgrow="SOMETIMES">
+                  <VBox maxHeight="486.0" maxWidth="252.0" minHeight="486.0" minWidth="252.0" prefHeight="486.0" prefWidth="252.0" HBox.hgrow="SOMETIMES">
                      <children>
-                        <AnchorPane fx:id="imgAnchor" maxHeight="900.0" maxWidth="600.0" prefHeight="198.0" prefWidth="266.0" VBox.vgrow="SOMETIMES">
+                        <AnchorPane fx:id="imgAnchor" maxHeight="314.0" maxWidth="250.0" minHeight="256.0" minWidth="232.0" prefHeight="310.0" prefWidth="250.0" VBox.vgrow="SOMETIMES">
                            <children>
-                              <ImageView fx:id="imgPoster" fitHeight="204.0" fitWidth="208.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="0.0">
+                              <ImageView fx:id="imgPoster" fitHeight="306.0" fitWidth="254.0" layoutX="-0.8" layoutY="0.19999999999999996" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.19999999999998863" AnchorPane.leftAnchor="-0.8" AnchorPane.rightAnchor="-2.799999999999983" AnchorPane.topAnchor="0.19999999999999996">
                                  <image>
                                     <Image url="@../../../../../../../Downloads/image77.png" />
                                  </image>
                               </ImageView>
                            </children>
                         </AnchorPane>
-                        <AnchorPane maxHeight="400.0" maxWidth="500.0" prefHeight="128.0" prefWidth="266.0" VBox.vgrow="SOMETIMES">
+                        <AnchorPane maxHeight="400.0" maxWidth="500.0" prefHeight="162.0" prefWidth="252.0" VBox.vgrow="SOMETIMES">
                            <children>
-                              <Label fx:id="lblTitle" layoutX="60.0" layoutY="91.0" text="TITLE" />
-                              <Label fx:id="lblCategories" layoutX="124.0" layoutY="36.0" text="TAGS - CATEGORIES" />
-                              <Label fx:id="lblIMDB" layoutY="36.0" text="IMDB RATING" />
-                              <Label fx:id="lblPersonal" layoutX="2.0" layoutY="64.0" text="PERSONAL RATING" />
-                              <Label fx:id="lblYear" layoutX="150.0" layoutY="82.0" text="YEAR" />
-                           </children>
-                        </AnchorPane>
-                        <AnchorPane prefHeight="42.0" prefWidth="266.0">
-                           <children>
-                              <Button fx:id="btnPlayMovie" mnemonicParsing="false" onAction="#handlePlayMovie" text="play" />
+                              <Label fx:id="lblTitle" layoutX="2.0" layoutY="10.0" text="TITLE" />
+                              <Label fx:id="lblCategories" layoutX="2.0" layoutY="96.0" text="TAGS - CATEGORIES" />
+                              <Label fx:id="lblIMDB" layoutX="86.0" layoutY="50.0" />
+                              <Label fx:id="lblPersonal" layoutX="86.0" layoutY="70.0" />
+                              <Label fx:id="lblYear" layoutX="2.0" layoutY="30.0" text="YEAR" />
+                              <Button fx:id="btnEditMovie" layoutX="2.0" layoutY="154.0" mnemonicParsing="false" onAction="#handleEditMovie" text="Edit a movie" />
+                              <Button fx:id="btnDeleteMovie" layoutX="114.0" layoutY="153.0" mnemonicParsing="false" onAction="#handleDeleteMovie" text="Remove a movie" />
+                              <Button fx:id="btnPlayMovie" layoutX="11.0" layoutY="127.0" mnemonicParsing="false" onAction="#handlePlayMovie" text="play" />
+                              <Label layoutX="2.0" layoutY="50.0" text="IMDB Rating:" />
+                              <Label layoutX="2.0" layoutY="70.0" text="My Rating:" />
                            </children>
                         </AnchorPane>
                      </children>
                   </VBox>
                </children>
             </HBox>
-            <AnchorPane prefHeight="46.0" prefWidth="622.0">
-               <children>
-                  <Button fx:id="btnAddMovie" layoutX="242.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleAddMovie" text="Create a movie" />
-                  <Button fx:id="btnEditMovie" layoutX="392.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleEditMovie" text="Edit a movie" />
-                  <Button fx:id="btnDeleteMovie" layoutX="518.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleDeleteMovie" text="Remove a movie" />
-               </children>
-            </AnchorPane>
          </children>
       </VBox>
    </children>
