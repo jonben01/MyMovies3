@@ -1,11 +1,17 @@
 package dk.easv.mymovies3.GUI.Controllers;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import org.controlsfx.control.CheckTreeView;
 import dk.easv.mymovies3.BE.Category;
@@ -22,11 +28,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
 
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -48,6 +59,13 @@ public class MainController implements Initializable {
     @FXML private TableColumn<Movie, String> colCategory;
 
     private PauseTransition searchPause;
+    @FXML
+    private ImageView imgPoster;
+    @FXML
+    private AnchorPane imgAnchor;
+    private static final String API_KEY = "AIzaSyBp5qkHmF0mbmBRcUjjr5krLRoNStZqLHE"; // Replace with your API key
+    private static final String CX_ID = "83e7d3530ea0f428e";   // Replace with your CSE ID
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -174,6 +192,40 @@ public class MainController implements Initializable {
                 throw new MovieOperationException("Failed to load the edit movie view.", e);
             }
         }
+    }
+
+    @FXML
+    private void onTableViewClick(MouseEvent mouseEvent) {
+        Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
+        if (selectedMovie != null) {
+            // Fetch and display the movie poster
+            getPoster(selectedMovie);
+
+            // Clear existing AnchorPane constraints
+            AnchorPane.clearConstraints(imgPoster);
+
+            // Set the fit width and height to a percentage of the AnchorPane's size
+            imgPoster.setFitWidth(imgAnchor.getWidth() * 0.95); // 95% of AnchorPane width
+            imgPoster.setFitHeight(imgAnchor.getHeight() * 0.95); // 95% of AnchorPane height
+
+            // Center the ImageView within the AnchorPane
+            centerImageView();
+
+            // Add listeners to re-center the ImageView when the AnchorPane resizes
+            imgAnchor.widthProperty().addListener((obs, oldVal, newVal) -> centerImageView());
+            imgAnchor.heightProperty().addListener((obs, oldVal, newVal) -> centerImageView());
+        }
+    }
+
+    private void centerImageView() {
+        // Clear existing constraints
+        AnchorPane.clearConstraints(imgPoster);
+
+        // Recalculate and set new constraints
+        AnchorPane.setTopAnchor(imgPoster, (imgAnchor.getHeight() - imgPoster.getFitHeight()) / 2);
+        AnchorPane.setBottomAnchor(imgPoster, (imgAnchor.getHeight() - imgPoster.getFitHeight()) / 2);
+        AnchorPane.setLeftAnchor(imgPoster, (imgAnchor.getWidth() - imgPoster.getFitWidth()) / 2);
+        AnchorPane.setRightAnchor(imgPoster, (imgAnchor.getWidth() - imgPoster.getFitWidth()) / 2);
     }
 
     //Custom exception method
@@ -372,6 +424,60 @@ public class MainController implements Initializable {
             throw new RuntimeException("An error occurred while updating movie categories", e);
         }
 
+    }
+
+    private String fetchFirstImageUrl(String query) {
+        try {
+            String urlString = String.format(
+                    "https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s&searchType=image",
+                    URLEncoder.encode(query, "UTF-8"),
+                    CX_ID,
+                    API_KEY
+            );
+
+            System.out.println("Request URL: " + urlString);
+
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                JSONObject jsonObject = JSONUtil.parseObj(response.toString());
+                if (jsonObject.containsKey("items")) {
+                    JSONArray items = jsonObject.getJSONArray("items");
+                    if (!items.isEmpty()) {
+                        return String.valueOf(items.getJSONObject(0).get("link"));
+                    }
+                }
+            } else {
+                System.out.println("Error: " + responseCode + " " + conn.getResponseMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void getPoster(Movie movie) {
+        String query = movie.getMovieTitle() + " movie poster " + movie.getMovieYear();
+        String imageUrl = fetchFirstImageUrl(query);
+
+        if (imageUrl != null) {
+            Image image = new Image(imageUrl);
+            imgPoster.setImage(image);
+        } else {
+            System.out.println("No image found for: " + query);
+        }
     }
 }
 
