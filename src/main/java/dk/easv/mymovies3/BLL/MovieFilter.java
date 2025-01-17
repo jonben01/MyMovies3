@@ -25,7 +25,7 @@ public class MovieFilter {
 
 
     /**
-     * this method creates a filteredList using the setPredicate method,
+     * this method creates a filteredList and filters it using the setPredicate method,
      * the list is filled with all objects that match any of the boolean checks
      * excluding the categories, as the user should only be shown movies containing all the selected categories.
      *

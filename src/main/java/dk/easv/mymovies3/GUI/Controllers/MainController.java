@@ -76,9 +76,15 @@ public class MainController implements Initializable {
     private static final String CX_ID = "83e7d3530ea0f428e";   // Our Custom Search Engine Key
     private Movie previousMovie = null;
 
+    public MainController() throws SQLException, IOException {
+        categoryModel = new CategoryModel();
+        movieModel = new MovieModel();
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableViews();
+
 
         List<Movie> movies = movieModel.getObservableMovies();
         List<Movie> oldMovies = new ArrayList();
@@ -86,12 +92,13 @@ public class MainController implements Initializable {
             Date lastOpened = movie.getLastOpenedDate();
             if (lastOpened != null) {
                 LocalDate date = lastOpened.toLocalDate();
-
-                if (date.isBefore(LocalDate.now().minusYears(2))) {
+                //if score is less than 6 and movie hasnt been watched in 2 years add to list
+                if (movie.getPersonalRating() < 6 && date.isBefore(LocalDate.now().minusYears(2))) {
                     oldMovies.add(movie);
                 }
             }
         }
+        //if the list isnt empty show what movies are on the list, and ask if the user wants to delete them.
         if (!oldMovies.isEmpty()) {
             StringBuilder content = new StringBuilder("The following movies are old and disliked: \n\n");
             for (Movie movie : oldMovies) {
@@ -104,6 +111,7 @@ public class MainController implements Initializable {
             alert.setContentText("Would you like to delete them?");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
+                //if user pressed okay, delete all movies on the list.
                 for (Movie movie : oldMovies) {
                     try {
                         movieModel.deleteMovie(movie);
@@ -114,37 +122,38 @@ public class MainController implements Initializable {
             }
         }
 
+        //Populate the checkTreeView "filterBox"
         try {
             populateFilterBox();
         } catch (SQLException e) {
             throw new RuntimeException("problem populating filterbox in initialize", e);
         }
 
+        //listens to filterBox for changes, and applyFiltersAndSearch() method based on the change.
         filterBox.getCheckModel().getCheckedItems().addListener((ListChangeListener<TreeItem<String>>) c -> {
             while (c.next()) {
-                //TODO figure out if this runs well like this, what happens if you uncheck all at the same time?
-                //todo make better exception handling jesus christ
                 if (c.wasAdded() || c.wasRemoved()) {
-                    try {
-                        applyFiltersAndSearch();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    applyFiltersAndSearch();
                 }
             }
         });
+        //hide before the first movie object is shown
         lblHiddenIMDB.setVisible(false);
         lblHiddenPersonal.setVisible(false);
         lblHiddenLastWatched.setVisible(false);
 
+        //listens for selections on the tableView to populate the "side "window"" in the application with info.
         tblMovies.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 List<Category> movieCategories = newValue.getCategories();
                 StringBuilder sb = new StringBuilder();
+                //show labels
                 lblHiddenIMDB.setVisible(true);
                 lblHiddenPersonal.setVisible(true);
                 lblHiddenLastWatched.setVisible(true);
 
+                //used to create a new line of categories for movies with more than 3 categories,
+                // so it fits on the screen
                 for (int i = 0; i < movieCategories.size(); i++) {
                     sb.append(movieCategories.get(i).toString());
                     if ((i + 1) % 3 == 0) {
@@ -154,7 +163,7 @@ public class MainController implements Initializable {
                     }
                     
                 }
-
+                //fill labels with info about the selected movie
                 lblTitle.setText(newValue.getMovieTitle() + " (" + newValue.getMovieYear() + ") ");
                 lblCategories.setText(sb.toString());
                 lblIMDB.setText(newValue.getImdbRating().toString());
@@ -333,6 +342,13 @@ public class MainController implements Initializable {
 
     }
 
+    /**
+     * Method used to display alerts, to avoid too much repeated code
+     *
+     * @param alertString String to display on the alert
+     * @param alertType sets the alertType of the Alert
+     * @return Optional<ButtonType> in case of confirmation type alerts
+     */
     public Optional<ButtonType> alertMethod(String alertString, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle("Error");
@@ -340,12 +356,6 @@ public class MainController implements Initializable {
         alert.setContentText(alertString);
         return alert.showAndWait();
     }
-
-    public MainController() throws SQLException, IOException {
-            categoryModel = new CategoryModel();
-            movieModel = new MovieModel();
-    }
-
 
     //TODO make sure it updates when you add a new category.
     public void populateFilterBox() throws SQLException {

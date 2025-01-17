@@ -69,6 +69,13 @@ public class CategoryDAO implements ICategoryDataAccess {
         }
     }
 
+    /**
+     * inserts an item into the CatMov_Junction table
+     *
+     * @param movieId movie to add categories to
+     * @param categoryId categories to add to movie
+     * @throws SQLException in case of db issues
+     */
     public void addCategoryToMovie(int movieId, int categoryId) throws SQLException {
         String sql = "INSERT INTO dbo.CatMov_Junction (Movie_Id, Category_Id) " + "VALUES(?, ?);";
         try (Connection connection = connector.getConnection();
