@@ -180,6 +180,11 @@ public class MovieDAO implements IMovieDataAccess {
             }
         }
 
+    /**
+     * Runs an SQL query to delete a movie from the database
+     * @param movie
+     * @throws SQLException
+     */
     @Override
     public void deleteMovie(Movie movie) throws SQLException {
         try (Connection conn = connector.getConnection();

@@ -15,6 +15,13 @@ public class CategoryDAO implements ICategoryDataAccess {
         connector = new DBConnector();
     }
 
+    /**
+     * This method is responsible for the new created categories from NewCategoryController,
+     * to be added to the DB.
+     * @param category
+     * @return The created Category, after it has been added to the DB.
+     * @throws SQLException
+     */
     @Override
     public Category createCategory(Category category) throws SQLException {
         String sql = "INSERT INTO dbo.Category(Category_Name) " + "VALUES(?);";
@@ -27,6 +34,12 @@ public class CategoryDAO implements ICategoryDataAccess {
         }
     }
 
+    /**
+     * This method retrieves all the categories saved in the DB,
+     * and adds them to an ArrayList which is then returned.
+     * @return ArrayList with the categories saved in the DB
+     * @throws SQLException
+     */
     @Override
     public ArrayList<Category> getAllCategories () throws SQLException {
         ArrayList<Category> allCategories = new ArrayList<>();
@@ -47,6 +60,12 @@ public class CategoryDAO implements ICategoryDataAccess {
         }
     }
 
+    /**
+     * This method is responsible for the categories from NewCategoryController,
+     * to be deleted from the DB.
+     * @param category
+     * @throws SQLException
+     */
     @Override
     public void deleteCategory(Category category) throws SQLException {
         try (Connection conn = connector.getConnection();
@@ -58,7 +77,13 @@ public class CategoryDAO implements ICategoryDataAccess {
         }
     }
 
-
+    /**
+     * This method goes through the CatMov_Junction table in the DB,
+     * and removes all the rows that are connected to a specific movie.
+     * Effectively removing all categories for a specific movie.
+     * @param movieId The Movie ID for the movie that needs to clear its categories.
+     * @throws SQLException
+     */
     public void clearCategoriesForMovie(int movieId) throws SQLException {
         // SQL query to delete all rows from the junction table where the Movie_Id matches
         String deleteSql = "DELETE FROM dbo.CatMov_Junction WHERE Movie_Id = ?;";

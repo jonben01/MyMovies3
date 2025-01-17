@@ -62,9 +62,8 @@ public class NewMovieController implements Initializable {
             refreshCategoryList();
             allCategories = FXCollections.observableArrayList(categoryModel.getAllCategories());
         } catch (SQLException e) {
-            throw new RuntimeException("yikes - new movie controller, in initialize",e);
+            throw new RuntimeException("yikes Scoob - new movie controller, in initialize",e);
         }
-        //lstCategories.setItems(allCategories);
 
         // Set up ListView cell factory for categories
         lstCategories.setCellFactory(param -> new ListCell<>() {
@@ -292,6 +291,10 @@ try {
         alert.showAndWait();
     }
 
+    /**
+     * When run, opens the New Category window, while passing on a traceback to this controller.
+     * @param actionEvent
+     */
     @FXML
     private void onNewCategoryClick(ActionEvent actionEvent) {
         try {

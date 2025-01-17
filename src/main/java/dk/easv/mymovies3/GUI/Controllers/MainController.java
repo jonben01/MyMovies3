@@ -194,6 +194,11 @@ public class MainController implements Initializable {
         });
     }
 
+    /**
+     * When run, this method opens the New Movie Window, while passing its movieModel.
+     * @param actionEvent
+     * @throws MovieOperationException
+     */
     public void handleAddMovie(ActionEvent actionEvent) throws MovieOperationException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newMovieView.fxml"));
@@ -216,7 +221,11 @@ public class MainController implements Initializable {
         }
     }
 
-    //Calls the edit stage when button is pressed
+    /**
+     * When run, this method opens the New Movie Window, while passing its movieModel and the information of the movie being edited.
+     * @param actionEvent
+     * @throws MovieOperationException
+     */
     public void handleEditMovie(ActionEvent actionEvent) throws MovieOperationException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
         if (selectedMovie == null) {
@@ -244,10 +253,16 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * This method gets run, whenever the user selects a movie on the list. It calls the getPoster() method, and makes UI changes to the ImageView position.
+     * @param mouseEvent
+     * @throws IOException
+     */
     @FXML
     private void onTableViewClick(MouseEvent mouseEvent) throws IOException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
-        if (selectedMovie != null && previousMovie != selectedMovie ) {
+        if (selectedMovie != null && previousMovie != selectedMovie ) { //Runs if a movie is selected, and it's not already showing
+
             // Fetch and display the movie poster
             getPoster(selectedMovie);
 
@@ -264,11 +279,14 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * // Setting Anchor constraints on the image to get it somewhat centered.
+     */
     private void centerImageView() {
         // Clear existing constraints
         AnchorPane.clearConstraints(imgPoster);
 
-        // Recalculate and set new constraints
+
         AnchorPane.setTopAnchor(imgPoster, (imgAnchor.getHeight() - imgPoster.getFitHeight()) / 2);
         AnchorPane.setBottomAnchor(imgPoster, (imgAnchor.getHeight() - imgPoster.getFitHeight()) / 2);
         AnchorPane.setLeftAnchor(imgPoster, (imgAnchor.getWidth() - imgPoster.getFitWidth()) / 2);
@@ -303,10 +321,11 @@ public class MainController implements Initializable {
                                                                 + "?", Alert.AlertType.CONFIRMATION);
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
+
                 movieModel.deleteMovie(movieToDelete);
                 File movieFile = new File(movieToDelete.getFilePath());
-                if(movieFile.exists()) {
-                    if (movieFile.delete()) {
+                if(movieFile.exists()) { // Runs if you have the movie file on your computer
+                    if (movieFile.delete()) { //attempts deletion
                     } else {
                         throw new MovieOperationException("Failed to delete the movie file: " + movieToDelete.getFilePath(), null);
                     }
@@ -361,53 +380,49 @@ public class MainController implements Initializable {
      */
     public void populateFilterBox() throws SQLException {
 
-        try {
-            List<String> allCategories = categoryModel.getAvailableCategories();
+        List<String> allCategories = categoryModel.getAvailableCategories();
 
-            //root node for treeView, hidden.
-            CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Root");
-            root.setExpanded(true);
+        //root node for treeView, hidden.
+        CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Root");
+        root.setExpanded(true);
 
-            //adds a category node, and creates new checkboxes under it.
-            CheckBoxTreeItem<String> categoriesNode = new CheckBoxTreeItem<>("Categories");
-            for (String category : allCategories) {
-                categoriesNode.getChildren().add(new CheckBoxTreeItem<>(category));
-            }
-            //adds an IMDB Rating node and adds children to it. SHOULD HAVE MADE A LIST TO AVOID DUPLICATE CODE
-            CheckBoxTreeItem<String> imdbNode = new CheckBoxTreeItem<>("IMDB Rating");
-            imdbNode.getChildren().addAll(
-                    new CheckBoxTreeItem<>("0.0 - 0.9"),
-                    new CheckBoxTreeItem<>("1.0 - 1.9"),
-                    new CheckBoxTreeItem<>("2.0 - 2.9"),
-                    new CheckBoxTreeItem<>("3.0 - 3.9"),
-                    new CheckBoxTreeItem<>("4.0 - 4.9"),
-                    new CheckBoxTreeItem<>("5.0 - 5.9"),
-                    new CheckBoxTreeItem<>("6.0 - 6.9"),
-                    new CheckBoxTreeItem<>("7.0 - 7.9"),
-                    new CheckBoxTreeItem<>("8.0 - 8.9"),
-                    new CheckBoxTreeItem<>("9.0 - 10.0")
-            );
-            //adds a personal rating node and adds children to it.
-            CheckBoxTreeItem<String> personalRatingNode = new CheckBoxTreeItem<>("Personal Rating");
-            personalRatingNode.getChildren().addAll(
-                    new CheckBoxTreeItem<>("0.0 - 0.9"),
-                    new CheckBoxTreeItem<>("1.0 - 1.9"),
-                    new CheckBoxTreeItem<>("2.0 - 2.9"),
-                    new CheckBoxTreeItem<>("3.0 - 3.9"),
-                    new CheckBoxTreeItem<>("4.0 - 4.9"),
-                    new CheckBoxTreeItem<>("5.0 - 5.9"),
-                    new CheckBoxTreeItem<>("6.0 - 6.9"),
-                    new CheckBoxTreeItem<>("7.0 - 7.9"),
-                    new CheckBoxTreeItem<>("8.0 - 8.9"),
-                    new CheckBoxTreeItem<>("9.0 - 10.0")
-            );
-            root.getChildren().addAll(categoriesNode, imdbNode, personalRatingNode);
-            //sets the root of the treeView and hides it.
-            filterBox.setRoot(root);
-            filterBox.setShowRoot(false);
-        } catch (SQLException e) {
-            throw new SQLException("Failed to populate filter box due to a database error.", e);
+        //adds a category node, and creates new checkboxes under it.
+        CheckBoxTreeItem<String> categoriesNode = new CheckBoxTreeItem<>("Categories");
+        for (String category : allCategories) {
+            categoriesNode.getChildren().add(new CheckBoxTreeItem<>(category));
         }
+            //adds an IMDB Rating node and adds children to it. SHOULD HAVE MADE A LIST TO AVOID DUPLICATE CODE
+        CheckBoxTreeItem<String> imdbNode = new CheckBoxTreeItem<>("IMDB Rating");
+        imdbNode.getChildren().addAll(
+                new CheckBoxTreeItem<>("0.0 - 0.9"),
+                new CheckBoxTreeItem<>("1.0 - 1.9"),
+                new CheckBoxTreeItem<>("2.0 - 2.9"),
+                new CheckBoxTreeItem<>("3.0 - 3.9"),
+                new CheckBoxTreeItem<>("4.0 - 4.9"),
+                new CheckBoxTreeItem<>("5.0 - 5.9"),
+                new CheckBoxTreeItem<>("6.0 - 6.9"),
+                new CheckBoxTreeItem<>("7.0 - 7.9"),
+                new CheckBoxTreeItem<>("8.0 - 8.9"),
+                new CheckBoxTreeItem<>("9.0 - 10.0")
+        );
+            //adds a personal rating node and adds children to it.
+        CheckBoxTreeItem<String> personalRatingNode = new CheckBoxTreeItem<>("Personal Rating");
+        personalRatingNode.getChildren().addAll(
+                new CheckBoxTreeItem<>("0.0 - 0.9"),
+                new CheckBoxTreeItem<>("1.0 - 1.9"),
+                new CheckBoxTreeItem<>("2.0 - 2.9"),
+                new CheckBoxTreeItem<>("3.0 - 3.9"),
+                new CheckBoxTreeItem<>("4.0 - 4.9"),
+                new CheckBoxTreeItem<>("5.0 - 5.9"),
+                new CheckBoxTreeItem<>("6.0 - 6.9"),
+                new CheckBoxTreeItem<>("7.0 - 7.9"),
+                new CheckBoxTreeItem<>("8.0 - 8.9"),
+                new CheckBoxTreeItem<>("9.0 - 10.0")
+        );
+        root.getChildren().addAll(categoriesNode, imdbNode, personalRatingNode);
+        //sets the root of the treeView and hides it.
+        filterBox.setRoot(root);
+        filterBox.setShowRoot(false);
     }
 
     /**
@@ -488,31 +503,43 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * This method retrieves the URL for the first image found via a custom Google search.
+     * The method works by creating a connection to the web, and then making a request via the Google API.
+     * Then it recieves a JSON response, which is then converted back to a simple String.
+     * This is then sent back to the GetPoster() method, which it was called from.
+     *
+     * @param query
+     * @return a String with the URL for an image based upon the given query.
+     * @throws IOException
+     */
     private String fetchFirstImageUrl(String query) throws IOException {
+        //This method is used to fetch the first image url from a Google Custom Search API.
 
-        String urlString = String.format("https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s&searchType=image", URLEncoder.encode(query, "UTF-8"), CX_ID, API_KEY);
+        String urlString = String.format("https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s&searchType=image", URLEncoder.encode(query, "UTF-8"), CX_ID, API_KEY); // The request URL is made here. This is what we search for in the image search.
         System.out.println("Request URL: " + urlString);
 
-        URL url = new URL(urlString);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        URL url = new URL(urlString); // Making a URL object from the request string above. This also gives it all the URL stuff like protocol, host, port and so on.
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // We open a connection to the URL
         conn.setRequestMethod("GET");
 
-        int responseCode = conn.getResponseCode();
-        if (responseCode == 200) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        int responseCode = conn.getResponseCode(); // Here we recieve the response from the Connection
+        if (responseCode == 200) { //We check the http response code. Http 200 means that status is successful
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream())); // Creating a BufferedReader to read the response from the input stream
             StringBuilder response = new StringBuilder();
             String inputLine;
 
-            while ((inputLine = in.readLine()) != null) {
+            while ((inputLine = in.readLine()) != null) { //Read the response line by line and then append it to the StringBuilder.
                 response.append(inputLine);
             }
-            in.close();
+            in.close(); //Closing the reader
 
-            JSONObject jsonObject = JSONUtil.parseObj(response.toString());
+
+            JSONObject jsonObject = JSONUtil.parseObj(response.toString()); //Parse the StringBuilder into a JSONObject
             if (jsonObject.containsKey("items")) {
-                JSONArray items = jsonObject.getJSONArray("items");
+                JSONArray items = jsonObject.getJSONArray("items"); //Get the array of images from the link.
                 if (!items.isEmpty()) {
-                    return String.valueOf(items.getJSONObject(0).get("link"));
+                    return String.valueOf(items.getJSONObject(0).get("link")); //Get the URL of the image with the index "0".
                 }
             }
         } else {
@@ -522,16 +549,23 @@ public class MainController implements Initializable {
         return null;
     }
 
+    /**
+     * This method, creates a "query" based on the selected movie's title and year, and then calls the fetchFirstImageUrl() method.
+     * After getting the image, it is set in the GUI.
+     * @param movie
+     * @throws IOException
+     */
     private void getPoster(Movie movie) throws IOException {
-        String query = movie.getMovieTitle() + " movie poster " + movie.getMovieYear();
+        String query = movie.getMovieTitle() + " movie poster " + movie.getMovieYear(); //We create the search query here, based of the movie's title and year.
         String imageUrl = fetchFirstImageUrl(query);
 
         if (imageUrl != null) {
-            Image image = new Image(imageUrl);
-            imgPoster.setImage(image);
+            Image image = new Image(imageUrl); //if an image exists, and we got its URL, we turn it into an image.
+            imgPoster.setImage(image); //And here we set the image.
         } else {
             System.out.println("No image found for: " + query);
             alertMethod("Failed to find an image for the movie!", Alert.AlertType.ERROR);
+
         }
     }
 }
