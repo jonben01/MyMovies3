@@ -1,17 +1,19 @@
 package dk.easv.mymovies3.BLL;
 
+//Project Imports
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BE.Movie;
 import dk.easv.mymovies3.DAL.MovieDAO;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 
+//Java Imports
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 
 public class MovieFilter {
     private MovieDAO movieDAO;

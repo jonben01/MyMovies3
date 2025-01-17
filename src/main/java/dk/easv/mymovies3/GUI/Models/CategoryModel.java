@@ -1,10 +1,12 @@
 package dk.easv.mymovies3.GUI.Models;
 
+//Project Imports
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BLL.CategoryManager;
+
+//Java Imports
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;

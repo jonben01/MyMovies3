@@ -1,6 +1,6 @@
 package dk.easv.mymovies3.BE;
 
-import java.util.ArrayList;
+//Java Imports
 import java.sql.Date;
 import java.util.List;
 

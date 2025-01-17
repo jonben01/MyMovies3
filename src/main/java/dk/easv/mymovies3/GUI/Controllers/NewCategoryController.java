@@ -1,13 +1,15 @@
 package dk.easv.mymovies3.GUI.Controllers;
 
+//Project Imports
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.GUI.Models.CategoryModel;
+
+//Java Imports
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -39,8 +41,12 @@ public class NewCategoryController {
             if (!txtCategory.getText().isEmpty()) {
                 Category newCategory = new Category(txtCategory.getText());
                 categoryModel.createCategory(newCategory);
+
+                if(newMovieController != null) {
+                    newMovieController.refreshCategoryList(); // Update category list in the movie controller
+                }
+
                 UpdateCategories();
-                newMovieController.updateCategories();
             }
         } catch (SQLException e) {
             throw new SQLException("Failed while adding category.", e);
@@ -54,8 +60,12 @@ try {
         // TODO: Implement this shit..
         Category category = listCategory.getSelectionModel().getSelectedItem();
         categoryModel.DeleteCategory(category);
+
+        if(newMovieController != null) {
+            newMovieController.refreshCategoryList(); // Update category list in the movie controller
+        }
+        UpdateCategories();
     }
-    UpdateCategories();
 } catch (SQLException e) {
     throw new SQLException("Failed while deleting category", e);
 }
