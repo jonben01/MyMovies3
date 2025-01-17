@@ -3,7 +3,6 @@ package dk.easv.mymovies3.BE;
 //Java Imports
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import java.util.Objects;
 
 public class Category {
 
@@ -38,17 +37,6 @@ public class Category {
         this.categoryName = categoryName;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        Category category = (Category) obj;
-        return id == category.id && Objects.equals(categoryName, category.getCategoryName());
-    }
 
     @Override
     public String toString() {

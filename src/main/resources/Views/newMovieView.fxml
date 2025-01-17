@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="363.0" prefWidth="390.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.NewMovieController">
+<AnchorPane prefHeight="434.0" prefWidth="390.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mymovies3.GUI.Controllers.NewMovieController">
    <children>
       <TextField fx:id="txtTitle" layoutX="16.0" layoutY="39.0" promptText="Title" />
       <TextField fx:id="txtIMDBRating" layoutX="16.0" layoutY="93.0" promptText="Imdb" />
@@ -16,13 +16,13 @@
       <TextField fx:id="txtFilePath" editable="false" layoutX="16.0" layoutY="278.0" promptText="path" />
       <Button fx:id="btnFileChooser" layoutX="16.0" layoutY="245.0" mnemonicParsing="false" onAction="#handleFileChooser" text="FileChooser" />
       <Button fx:id="btnAddMovie" layoutX="15.0" layoutY="320.0" mnemonicParsing="false" onAction="#handleAddMovie" text="add" />
-      <Button fx:id="btnCancelMovie" layoutX="331.0" layoutY="320.0" mnemonicParsing="false" onAction="#handleCancelMovie" text="cancel" />
-      <Button layoutX="284.0" layoutY="244.0" mnemonicParsing="false" onAction="#onNewCategoryClick" text="New Category">
+      <Button fx:id="btnCancelMovie" layoutX="326.0" layoutY="373.0" mnemonicParsing="false" onAction="#handleCancelMovie" text="cancel" />
+      <Button layoutX="279.0" layoutY="297.0" mnemonicParsing="false" onAction="#onNewCategoryClick" text="New Category">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font>
       </Button>
-      <ListView fx:id="lstCategories" layoutX="179.0" layoutY="39.0" prefHeight="200.0" prefWidth="200.0" />
+      <ListView fx:id="lstCategories" layoutX="174.0" layoutY="12.0" prefHeight="280.0" prefWidth="200.0" />
       <Text layoutX="16.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Title" />
       <Text layoutX="17.0" layoutY="89.0" strokeType="OUTSIDE" strokeWidth="0.0" text="IMDB rating" />
       <Text layoutX="16.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Personal rating" />

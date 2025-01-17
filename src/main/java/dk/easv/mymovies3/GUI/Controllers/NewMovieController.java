@@ -92,8 +92,6 @@ public class NewMovieController implements Initializable {
                 } else {
                     // Reset the checkbox text and binding
                     checkBox.setText(category.getCategoryName());
-                    checkBox.selectedProperty().unbind(); // Unbind any previous bindings
-                    checkBox.setSelected(category.isSelected()); // Set the initial state
                     checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
                         category.setSelected(newValue); // Update the Category object
                     });
@@ -337,16 +335,6 @@ try {
             txtPersonalRating.setText(String.valueOf(movieToUpdate.getPersonalRating()));
             txtMovieYear.setText(String.valueOf(movieToUpdate.getMovieYear()));
             txtFilePath.setText(movieToUpdate.getFilePath());
-
-            // Match categories in the movie to those in the ListView
-            for (Category movieCategory : movieToUpdate.getCategories()) {
-                for (Category allCategory : allCategories) {
-                    if (movieCategory.equals(allCategory)) {
-                        allCategory.setSelected(true); // Mark category as selected
-                        break;
-                    }
-                }
-            }
 
             // Update the checkboxes in the ListView
             lstCategories.refresh();
