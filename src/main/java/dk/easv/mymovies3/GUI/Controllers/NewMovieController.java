@@ -120,17 +120,20 @@ public class NewMovieController implements Initializable {
         }
     }
 
+    // Handles the addition of a movie based on user input.
     public void handleAddMovie(ActionEvent actionEvent) throws MovieOperationException {
 
         try {
-            if (!validateFields()) {
+            if (!validateFields()) {// Validate that all required fields are filled.
                 return;
             }
 
             Double imdbRating = null;
+            // Check if the IMDB rating field is not empty
             if (!txtIMDBRating.getText().isEmpty()) {
                 try {
-                    imdbRating = Double.parseDouble(txtIMDBRating.getText());
+                    imdbRating = Double.parseDouble(txtIMDBRating.getText());// Parse personal rating.
+                    // Validate that IMDB rating is within the acceptable range.
                     if (imdbRating < 0 || imdbRating > 10) {
                         alertMethod("Please enter a valid IMDB-Rating between 0 and 10", Alert.AlertType.ERROR);
                         return;
@@ -141,9 +144,11 @@ public class NewMovieController implements Initializable {
                 }
             }
             Double personalRating = null;
+            // Check if the personal rating field is not empty.
             if (!txtPersonalRating.getText().isEmpty()) {
                 try {
                     personalRating = Double.parseDouble(txtPersonalRating.getText());
+                    // Validate that personal rating is within the acceptable range
                     if (personalRating > 10 || personalRating < 0) {
 
                         alertMethod("Please enter a valid personal rating between 0 and 10", Alert.AlertType.ERROR);
@@ -156,18 +161,23 @@ public class NewMovieController implements Initializable {
                 }
             }
 
+            // Retrieve title and year of the movie from text fields.
             String title = txtTitle.getText();
             int year = Integer.parseInt(txtMovieYear.getText());
+            // Handle file copying for the movie's associated file and retrieve the new file path
             String newFilePath = handleFileCopy();
 
+            // Get the categories selected by the user.
             ArrayList<Category> selectedCategories = getSelectedCategories();
 
+            // Check if the user is updating an existing movie or creating a new one.
             if (isUpdateMode) {
                 // Update existing movie
                 updateMovie(title, imdbRating, personalRating, year, newFilePath, selectedCategories);
                 refreshCategoryList();
 
             } else {
+                // Create a new movie with the provided details.
                 createMovie(title, imdbRating, personalRating, year, newFilePath, selectedCategories);
 
             }
@@ -180,8 +190,9 @@ public class NewMovieController implements Initializable {
         }
     }
 
+    // Validates that all required fields are filled by the user.
     private boolean validateFields() {
-
+        // Check if any of the required fields are null or empty.
         if (txtFilePath.getText() == null || txtFilePath.getText().isEmpty()
                 || txtMovieYear.getText() == null || txtMovieYear.getText().isEmpty()
                 || txtPersonalRating.getText() == null || txtPersonalRating.getText().isEmpty()
@@ -194,6 +205,7 @@ public class NewMovieController implements Initializable {
 
     }
 
+    // Handles the copying of the movie file to the designated directory.
     private String handleFileCopy() throws MovieOperationException {
 
         try {
@@ -201,21 +213,24 @@ public class NewMovieController implements Initializable {
             Path destinationPath = Paths.get(destinationDir, new File(txtFilePath.getText()).getName());
 
             try {
+                // Attempt to copy the file to the destination.
                 Files.copy(Paths.get(txtFilePath.getText()), destinationPath);
             } catch (FileAlreadyExistsException e) {
+                // Handle case where the file already exists in the destination.
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Error");
                 alert.setHeaderText("File already exists");
                 alert.setContentText("Replace existing file with new file?");
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.get() == ButtonType.OK) {
+                    // If user confirms replacement, delete the existing movie entry if it exists
                     Movie movieToBeDeleted = movieModel.getMovieByFilePath(destinationPath.toString());
                     if (movieToBeDeleted != null) {
                         movieModel.deleteMovie(movieToBeDeleted);
                     }
                 }
             }
-            return destinationPath.toString();
+            return destinationPath.toString();// Return the new file path
         } catch (Exception e) {
             throw new MovieOperationException("Failed while handling file copy", e);
         }
@@ -238,14 +253,17 @@ public class NewMovieController implements Initializable {
     private void updateMovie(String title, Double imdbRating, Double personalRating, int year, String filePath, ArrayList<Category> selectedCategories) throws MovieOperationException {
 
         try {
+            // Update movie properties with the new values
             movieToUpdate.setMovieTitle(title);
             movieToUpdate.setImdbRating(imdbRating);
             movieToUpdate.setPersonalRating(personalRating);
             movieToUpdate.setMovieYear(year);
             movieToUpdate.setFilePath(filePath);
 
+            // Update the movie in the model (e.g., database or data storage).
             movieModel.updateMovie(movieToUpdate);
 
+            // Update the movie's associated categories.
             setCategories(movieToUpdate);
 
         } catch (Exception e) {
@@ -254,27 +272,41 @@ public class NewMovieController implements Initializable {
 
     }
 
+    // Creates a new movie with the provided details.
     private void createMovie(String title, Double imdbRating, Double personalRating, int year, String filePath, ArrayList<Category> selectedCategories) throws Exception {
+
+        // Instantiate a new Movie object with the provided parameters
         Movie newMovie = new Movie(title, imdbRating, personalRating, filePath, year, selectedCategories);
+
+        // Add the new movie to the model (e.g., database or data storage).
         movieModel.createMovie(newMovie);
+
+        // Assign the selected categories to the newly created movie.
         setCategories(newMovie);
     }
 
+    // Sets or updates the categories associated with a movie.
     private void setCategories(Movie movie) throws MovieOperationException {
 try {
     //Clear existing categories
     categoryModel.clearCategoriesForMovie(movie.getId());
 
+    // Create a list to store the selected categories.
     List<Category> selectedCategories = new ArrayList<>();
+
+    // Iterate through all available categories.
     for (Category category : allCategories) {
+        // If the category is selected, link it to the movie.
         if (category.isSelected()) {
-            categoryModel.addCategoryToMovie(movie.getId(), category.getId());
-            selectedCategories.add(category);
+            categoryModel.addCategoryToMovie(movie.getId(), category.getId()); // Update the database
+            selectedCategories.add(category); // Add to the selected categories list.
         }
     }
-    // Update the movie's categories in the model
+    // Update the movie's category list with the selected categories.
     movie.setCategories(selectedCategories);
-    controller.updateMovieCategories(movie); // Notify MainController to refresh
+
+    // Notify the controller to refresh the movie's categories in the UI.
+    controller.updateMovieCategories(movie);
 } catch (SQLException e) {
     throw new MovieOperationException("Failed while setting a category", e);
 }

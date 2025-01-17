@@ -149,9 +149,9 @@ public class MovieDAO implements IMovieDataAccess {
 
         String sql = "SELECT c.Id, c.Category_Name FROM Category c " +
                 "JOIN CatMov_Junction cmj ON c.Id = cmj.Category_Id WHERE cmj.Movie_Id = ?";
-        /*Execute the query and process the results:
+        /**Execute the query and process the results:
          *    - For each row in the ResultSet, create a new `Category` object using the retrieved data.
-         *    - Add the `Category` object to the list.*/
+         *    - Add the `Category` object to the list.**/
         try (Connection conn = connector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, movieId);
