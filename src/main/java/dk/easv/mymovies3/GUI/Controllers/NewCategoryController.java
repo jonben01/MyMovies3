@@ -37,62 +37,49 @@ public class NewCategoryController {
     @FXML
     private void handleAddCategory(ActionEvent actionEvent) throws SQLException {
 
-        try {
-            if (!txtCategory.getText().isEmpty()) {
-                Category newCategory = new Category(txtCategory.getText());
-                categoryModel.createCategory(newCategory);
+        if (!txtCategory.getText().isEmpty()) {
+            Category newCategory = new Category(txtCategory.getText());
+            categoryModel.createCategory(newCategory);
 
-                if(newMovieController != null) {
-                    newMovieController.refreshCategoryList(); // Update category list in the movie controller
-                }
-
-                UpdateCategories();
+            if(newMovieController != null) {
+                newMovieController.refreshCategoryList(); // Update category list in the movie controller
             }
-        } catch (SQLException e) {
-            throw new SQLException("Failed while adding category.", e);
+            UpdateCategories();
         }
     }
 
     @FXML
     private void handleDeleteCategory(ActionEvent actionEvent) throws SQLException {
-try {
-    if (listCategory.getSelectionModel().getSelectedItem() != null) {
-        // TODO: Implement this shit..
-        Category category = listCategory.getSelectionModel().getSelectedItem();
-        categoryModel.DeleteCategory(category);
 
-        if(newMovieController != null) {
-            newMovieController.refreshCategoryList(); // Update category list in the movie controller
-        }
+        if (listCategory.getSelectionModel().getSelectedItem() != null) {
+            Category category = listCategory.getSelectionModel().getSelectedItem();
+            categoryModel.DeleteCategory(category);
+
+            if(newMovieController != null) {
+                newMovieController.refreshCategoryList(); // Update category list in the movie controller
+            }
         UpdateCategories();
-    }
-} catch (SQLException e) {
-    throw new SQLException("Failed while deleting category", e);
-}
+       }
     }
 
     public void UpdateCategories() throws SQLException {
 
-        try {
-            if (listCategory != null) {
-                listCategory.getItems().clear();
-            }
-            for (Category category : categoryModel.getAllCategories()) {
-                listCategory.getItems().add(category);
-            }
-            listCategory.setCellFactory(param -> new ListCell<Category>() {
-                @Override
-                protected void updateItem(Category item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                    } else {
-                        setText(item.getCategoryName());
-                    }
-                }
-            });
-        } catch (SQLException e) {
-            throw new SQLException("Failed while updating category", e);
+        if (listCategory != null) {
+            listCategory.getItems().clear();
         }
+        for (Category category : categoryModel.getAllCategories()) {
+            listCategory.getItems().add(category);
+        }
+        listCategory.setCellFactory(param -> new ListCell<Category>() {
+            @Override
+            protected void updateItem(Category item, boolean empty) {
+            super.updateItem(item, empty);
+                if (empty || item == null) {
+                  setText(null);
+                } else {
+                setText(item.getCategoryName());
+                 }
+            }
+        });
     }
 }

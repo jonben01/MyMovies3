@@ -115,8 +115,8 @@ public class MainController implements Initializable {
                 for (Movie movie : oldMovies) {
                     try {
                         movieModel.deleteMovie(movie);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                    } catch (SQLException e) {
+                        throw new RuntimeException("problem deleting a movie in old movies segment in initialize", e);
                     }
                 }
             }
@@ -133,7 +133,11 @@ public class MainController implements Initializable {
         filterBox.getCheckModel().getCheckedItems().addListener((ListChangeListener<TreeItem<String>>) c -> {
             while (c.next()) {
                 if (c.wasAdded() || c.wasRemoved()) {
-                    applyFiltersAndSearch();
+                    try {
+                        applyFiltersAndSearch();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });
@@ -279,8 +283,13 @@ public class MainController implements Initializable {
     }
 
 
-
-    public void handleDeleteMovie(ActionEvent actionEvent) throws MovieOperationException {
+    /**
+     * deletes a movie
+     *
+     * @param actionEvent when button is pressed
+     * @throws SQLException in case of db issues
+     */
+    public void handleDeleteMovie(ActionEvent actionEvent) throws SQLException {
 
         if(tblMovies.getSelectionModel().getSelectedItem() == null)
         {
@@ -289,29 +298,18 @@ public class MainController implements Initializable {
         else
         {
             Movie movieToDelete = tblMovies.getSelectionModel().getSelectedItem();
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete Movie");
-            alert.setHeaderText(null);
-            alert.setContentText("Are you sure you want to delete: " + movieToDelete.getMovieTitle() + "?" );
-            Optional<ButtonType> result = alert.showAndWait();
+            Optional<ButtonType> result = alertMethod("Are you sure you want to delete: "
+                                                                + movieToDelete.getMovieTitle()
+                                                                + "?", Alert.AlertType.CONFIRMATION);
+
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                try {
-                    movieModel.deleteMovie(movieToDelete);
-                    File movieFile = new File(movieToDelete.getFilePath());
-                    if(movieFile.exists()) {
-                        if (movieFile.delete()) {
-                        } else {
-                            throw new MovieOperationException("Failed to delete the movie file: " + movieToDelete.getFilePath(), null);
-                        }
+                movieModel.deleteMovie(movieToDelete);
+                File movieFile = new File(movieToDelete.getFilePath());
+                if(movieFile.exists()) {
+                    if (movieFile.delete()) {
+                    } else {
+                        throw new MovieOperationException("Failed to delete the movie file: " + movieToDelete.getFilePath(), null);
                     }
-
-                } catch (Exception e) {
-                    System.err.println("Error deleting movie: " + e.getMessage());
-                    e.printStackTrace();
-
-                    alertMethod("An error occurred while deleting a Movie. Please try again later" , Alert.AlertType.ERROR );
-
-                    throw new MovieOperationException("Failed to delete movie.", e);
                 }
                 tblMovies.refresh();
             }
@@ -336,9 +334,7 @@ public class MainController implements Initializable {
             }
             return new ReadOnlyStringWrapper(categories.toString()); //resulting string is wrapped in a ReadOnlyStringWrapper (a JavaFX observable value) so it can be displayed in the table
         });
-
         tblMovies.setItems(movieModel.getObservableMovies());
-
     }
 
     /**
@@ -357,7 +353,14 @@ public class MainController implements Initializable {
     }
 
     //TODO make sure it updates when you add a new category.
+
+    /**
+     * populates CheckTreeView with all categories and all valid rating ranges to display on the GUI
+     *
+     * @throws SQLException in case of db issue
+     */
     public void populateFilterBox() throws SQLException {
+
         try {
             List<String> allCategories = categoryModel.getAvailableCategories();
 
@@ -370,7 +373,7 @@ public class MainController implements Initializable {
             for (String category : allCategories) {
                 categoriesNode.getChildren().add(new CheckBoxTreeItem<>(category));
             }
-            //TODO make this not shit dude bro homie
+            //adds an IMDB Rating node and adds children to it. SHOULD HAVE MADE A LIST TO AVOID DUPLICATE CODE
             CheckBoxTreeItem<String> imdbNode = new CheckBoxTreeItem<>("IMDB Rating");
             imdbNode.getChildren().addAll(
                     new CheckBoxTreeItem<>("0.0 - 0.9"),
@@ -384,7 +387,7 @@ public class MainController implements Initializable {
                     new CheckBoxTreeItem<>("8.0 - 8.9"),
                     new CheckBoxTreeItem<>("9.0 - 10.0")
             );
-            //TODO make this not shit dude bro homie
+            //adds a personal rating node and adds children to it.
             CheckBoxTreeItem<String> personalRatingNode = new CheckBoxTreeItem<>("Personal Rating");
             personalRatingNode.getChildren().addAll(
                     new CheckBoxTreeItem<>("0.0 - 0.9"),
@@ -407,43 +410,51 @@ public class MainController implements Initializable {
         }
     }
 
-    public void applyFiltersAndSearch() throws MovieOperationException {
+    /**
+     * Gathers all checked boxes from the CheckTreeView "filterBox" and separates them into different hashsets
+     * based on parent node. Once separated will call applyFiltersAndSearch to return a filtered list to show on the table
+     * Also takes a searchQuery from the search text field "txtSearch"
+     *
+     * @throws SQLException in case of db issues
+     */
+    public void applyFiltersAndSearch() throws SQLException {
 
-        try {
-            List<TreeItem<String>> checkedItems = filterBox.getCheckModel().getCheckedItems();
+        List<TreeItem<String>> checkedItems = filterBox.getCheckModel().getCheckedItems();
 
-            String searchQuery = txtSearch.getText();
-            Set<String> selectedCategories = new HashSet<>();
-            Set<String> selectedImdbRange = new HashSet<>();
-            Set<String> selectedPersonalRating = new HashSet<>();
+        String searchQuery = txtSearch.getText();
+        Set<String> selectedCategories = new HashSet<>();
+        Set<String> selectedImdbRange = new HashSet<>();
+        Set<String> selectedPersonalRating = new HashSet<>();
 
-            for (TreeItem<String> item : checkedItems) {
-                TreeItem<String> parent = item.getParent();
+        for (TreeItem<String> item : checkedItems) {
+            TreeItem<String> parent = item.getParent();
 
-                if (parent != null) {
-                    String parentValue = parent.getValue();
-                    if ("Categories".equals(parentValue)) {
-                        selectedCategories.add(item.getValue());
-                    } else if ("IMDB Rating".equals(parentValue)) {
-                        selectedImdbRange.add(item.getValue());
-                    } else if ("Personal Rating".equals(parentValue)) {
-                        selectedPersonalRating.add(item.getValue());
-                    }
+            if (parent != null) {
+                String parentValue = parent.getValue();
+                if ("Categories".equals(parentValue)) {
+                    selectedCategories.add(item.getValue());
+                } else if ("IMDB Rating".equals(parentValue)) {
+                    selectedImdbRange.add(item.getValue());
+                } else if ("Personal Rating".equals(parentValue)) {
+                    selectedPersonalRating.add(item.getValue());
                 }
             }
-            ObservableList<Movie> filteredList = null;
-            if (txtSearch.getText().isEmpty()) {
-                filteredList = movieModel.applyFiltersAndSearch(null, selectedCategories, selectedImdbRange, selectedPersonalRating);
-            } else if (!txtSearch.getText().isEmpty()) {
-                filteredList = movieModel.applyFiltersAndSearch(searchQuery, selectedCategories, selectedImdbRange, selectedPersonalRating);
-            }
-            tblMovies.setItems(filteredList);
-
-        } catch (Exception e) {
-            throw new MovieOperationException("An error occurred while applying filters and searching", e);
         }
+        ObservableList<Movie> filteredList = null;
+        if (txtSearch.getText().isEmpty()) {
+            filteredList = movieModel.applyFiltersAndSearch(null, selectedCategories, selectedImdbRange, selectedPersonalRating);
+        } else if (!txtSearch.getText().isEmpty()) {
+            filteredList = movieModel.applyFiltersAndSearch(searchQuery, selectedCategories, selectedImdbRange, selectedPersonalRating);
+        }
+        tblMovies.setItems(filteredList);
     }
 
+    /**
+     * Uses Desktop class to play an mp4 or mpeg4 file with the systems default application.
+     *
+     * @param actionEvent
+     * @throws SQLException
+     */
     public void handlePlayMovie(ActionEvent actionEvent) throws SQLException {
         Movie movieFile = tblMovies.getSelectionModel().getSelectedItem();
         File file = new File (movieFile.getFilePath());
@@ -455,6 +466,7 @@ public class MainController implements Initializable {
             return;
         }
 
+        //if desktop is supported try to open the file using the systems default application
         if (Desktop.isDesktopSupported()) {
             Desktop desktop = Desktop.getDesktop();
 
@@ -520,7 +532,6 @@ public class MainController implements Initializable {
         } else {
             System.out.println("No image found for: " + query);
             alertMethod("Failed to find an image for the movie!", Alert.AlertType.ERROR);
-
         }
     }
 }
