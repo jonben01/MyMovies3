@@ -38,10 +38,20 @@ public class MovieManager {
         return movie;
     }
 
+    /**
+     * passes the information from the MovieModel class to the MovieFilter class.
+     *
+     * @param searchQuery query from search field
+     * @param selectedCategories categories selected in checkTreeView "filterBox"
+     * @param selectedImdbRatings IMDB rating ranges selected in checkTreeView "filterBox"
+     * @param selectedPersonalRatings Personal rating ranges selected in checkTreeView "filterBox"
+     * @return returns a filtered observable list to show on the table
+     * @throws SQLException in case of db issue
+     */
     public ObservableList<Movie> applyFiltersAndSearch(String searchQuery,
                                               Set<String> selectedCategories,
                                               Set<String> selectedImdbRatings,
-                                              Set<String> selectedPersonalRatings) throws Exception {
+                                              Set<String> selectedPersonalRatings) throws SQLException {
         return movieFilter.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRatings, selectedPersonalRatings);
     }
 

@@ -21,6 +21,13 @@ public class MovieDAO implements IMovieDataAccess {
         connector = new DBConnector();
     }
 
+    /**
+     * Inserts an item on a new tuple, representing the created movie object, in the database movie table
+     *
+     * @param movie made from user input in the gui layer
+     * @return the created movie, so it can be added to the observable list and shown on the gui
+     * @throws SQLException in case of db error
+     */
     @Override
     public Movie createMovie(Movie movie) throws SQLException {
         String sql = "INSERT INTO dbo.Movie(Movie_Title, IMDB_Rating, Personal_Rating, File_Path, Movie_Year) " +

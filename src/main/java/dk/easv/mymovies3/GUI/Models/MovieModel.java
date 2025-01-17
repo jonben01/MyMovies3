@@ -66,7 +66,7 @@ public class MovieModel {
     public ObservableList<Movie> applyFiltersAndSearch(String searchQuery,
                                               Set<String> selectedCategories,
                                               Set<String> selectedImdbRatings,
-                                              Set<String> selectedPersonalRatings) throws Exception {
+                                              Set<String> selectedPersonalRatings) throws SQLException {
         return movieManager.applyFiltersAndSearch(searchQuery,selectedCategories, selectedImdbRatings, selectedPersonalRatings);
     }
 
