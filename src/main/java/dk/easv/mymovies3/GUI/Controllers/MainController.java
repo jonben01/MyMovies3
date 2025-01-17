@@ -288,6 +288,13 @@ public class MainController implements Initializable {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
                     movieModel.deleteMovie(movieToDelete);
+                    File movieFile = new File(movieToDelete.getFilePath());
+                    if(movieFile.exists()) {
+                        if (movieFile.delete()) {
+                        } else {
+                            throw new MovieOperationException("Failed to delete the movie file: " + movieToDelete.getFilePath(), null);
+                        }
+                    }
 
                 } catch (Exception e) {
                     System.err.println("Error deleting movie: " + e.getMessage());
@@ -461,12 +468,7 @@ public class MainController implements Initializable {
 
     private String fetchFirstImageUrl(String query) throws IOException {
 
-        String urlString = String.format(
-                "https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s&searchType=image",
-                URLEncoder.encode(query, "UTF-8"),
-                CX_ID,
-                API_KEY
-        );
+        String urlString = String.format("https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s&searchType=image", URLEncoder.encode(query, "UTF-8"), CX_ID, API_KEY);
         System.out.println("Request URL: " + urlString);
 
         URL url = new URL(urlString);
@@ -507,6 +509,8 @@ public class MainController implements Initializable {
             imgPoster.setImage(image);
         } else {
             System.out.println("No image found for: " + query);
+            alertMethod("Failed to find an image for the movie!", Alert.AlertType.ERROR);
+
         }
     }
 }
