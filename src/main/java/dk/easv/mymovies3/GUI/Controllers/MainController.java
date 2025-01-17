@@ -21,6 +21,7 @@ import java.util.*;
 import java.sql.Date;
 import java.util.List;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -461,7 +462,13 @@ public class MainController implements Initializable {
         } else if (!txtSearch.getText().isEmpty()) {
             filteredList = movieModel.applyFiltersAndSearch(searchQuery, selectedCategories, selectedImdbRange, selectedPersonalRating);
         }
-        tblMovies.setItems(filteredList);
+        //convert filteredList to a sortedList to allow default sorting function of tableViews
+        if (filteredList != null) {
+            SortedList<Movie> sortedList = new SortedList<>(filteredList);
+            //thank you error message
+            sortedList.comparatorProperty().bind(tblMovies.comparatorProperty());
+            tblMovies.setItems(sortedList);
+        }
     }
 
     /**
@@ -477,6 +484,7 @@ public class MainController implements Initializable {
             Optional<ButtonType> result = alertMethod("File doesnt exist, do you want to delete it from the application?", Alert.AlertType.CONFIRMATION);
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 movieModel.deleteMovie(movieFile);
+                tblMovies.refresh();
             }
             return;
         }
