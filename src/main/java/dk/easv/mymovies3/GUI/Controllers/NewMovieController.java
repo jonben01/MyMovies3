@@ -291,6 +291,10 @@ try {
         alert.showAndWait();
     }
 
+    /**
+     * When run, opens the New Category window, while passing on a traceback to this controller.
+     * @param actionEvent
+     */
     @FXML
     private void onNewCategoryClick(ActionEvent actionEvent) {
         try {
