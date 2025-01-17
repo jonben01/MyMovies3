@@ -1,9 +1,10 @@
 package dk.easv.mymovies3.DAL;
 
-
+//Project Imports
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.BE.Movie;
 
+//Java Imports
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;

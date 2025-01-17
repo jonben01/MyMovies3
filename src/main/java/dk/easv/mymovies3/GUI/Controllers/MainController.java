@@ -1,4 +1,36 @@
 package dk.easv.mymovies3.GUI.Controllers;
+
+//Project Imports
+import dk.easv.mymovies3.BE.Category;
+import dk.easv.mymovies3.BE.Movie;
+import dk.easv.mymovies3.GUI.Models.CategoryModel;
+import dk.easv.mymovies3.GUI.Models.MovieModel;
+
+//Java Imports
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.*;
+import java.sql.Date;
+import java.util.List;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.scene.image.Image;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -13,35 +45,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import org.controlsfx.control.CheckTreeView;
-import dk.easv.mymovies3.BE.Category;
-import dk.easv.mymovies3.BE.Movie;
-import dk.easv.mymovies3.GUI.Models.CategoryModel;
-import dk.easv.mymovies3.GUI.Models.MovieModel;
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.scene.image.Image;
-
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.*;
-import java.sql.Date;
-import java.util.List;
 
 public class MainController implements Initializable {
     @FXML public Label lblTitle;
@@ -69,8 +72,8 @@ public class MainController implements Initializable {
     private ImageView imgPoster;
     @FXML
     private AnchorPane imgAnchor;
-    private static final String API_KEY = "AIzaSyBp5qkHmF0mbmBRcUjjr5krLRoNStZqLHE"; // Replace with your API key
-    private static final String CX_ID = "83e7d3530ea0f428e";   // Replace with your CSE ID
+    private static final String API_KEY = "AIzaSyBp5qkHmF0mbmBRcUjjr5krLRoNStZqLHE"; // Our Google images API key
+    private static final String CX_ID = "83e7d3530ea0f428e";   // Our Custom Search Engine Key
     private Movie previousMovie = null;
 
     @Override

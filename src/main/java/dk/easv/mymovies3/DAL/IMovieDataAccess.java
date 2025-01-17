@@ -1,8 +1,9 @@
 package dk.easv.mymovies3.DAL;
 
-
+//Project Imports
 import dk.easv.mymovies3.BE.Movie;
 
+//Java Imports
 import java.sql.SQLException;
 import java.util.List;
 

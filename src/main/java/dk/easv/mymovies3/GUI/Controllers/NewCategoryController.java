@@ -1,13 +1,15 @@
 package dk.easv.mymovies3.GUI.Controllers;
 
+//Project Imports
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.GUI.Models.CategoryModel;
+
+//Java Imports
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-
 import java.io.IOException;
 import java.sql.SQLException;
 

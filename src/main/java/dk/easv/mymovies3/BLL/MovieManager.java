@@ -1,9 +1,11 @@
 package dk.easv.mymovies3.BLL;
 
+//Project Imports
 import dk.easv.mymovies3.BE.Movie;
 import dk.easv.mymovies3.DAL.MovieDAO;
-import javafx.collections.ObservableList;
 
+//Java Imports
+import javafx.collections.ObservableList;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;

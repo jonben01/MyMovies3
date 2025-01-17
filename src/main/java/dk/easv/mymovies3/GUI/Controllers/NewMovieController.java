@@ -1,21 +1,12 @@
 package dk.easv.mymovies3.GUI.Controllers;
+
+//Project Imports
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.GUI.Models.CategoryModel;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import dk.easv.mymovies3.BE.Movie;
 import dk.easv.mymovies3.GUI.Models.MovieModel;
 
+//Java Imports
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -28,6 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class NewMovieController implements Initializable {
     @FXML public Button btnFileChooser;

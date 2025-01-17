@@ -1,7 +1,9 @@
 package dk.easv.mymovies3.DAL;
 
+//Project Imports
 import dk.easv.mymovies3.BE.Category;
 
+//Java Imports
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;

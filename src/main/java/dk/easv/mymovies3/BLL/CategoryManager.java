@@ -1,12 +1,13 @@
 package dk.easv.mymovies3.BLL;
 
+//Project imports
 import dk.easv.mymovies3.BE.Category;
 import dk.easv.mymovies3.DAL.CategoryDAO;
 
+//Java imports
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class CategoryManager {
 

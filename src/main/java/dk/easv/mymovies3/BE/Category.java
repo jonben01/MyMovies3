@@ -1,8 +1,8 @@
 package dk.easv.mymovies3.BE;
 
+//Java Imports
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-
 import java.util.Objects;
 
 public class Category {
