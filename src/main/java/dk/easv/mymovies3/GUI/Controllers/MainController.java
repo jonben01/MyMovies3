@@ -234,7 +234,8 @@ public class MainController implements Initializable {
     @FXML
     private void onTableViewClick(MouseEvent mouseEvent) throws IOException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
-        if (selectedMovie != null && previousMovie != selectedMovie ) {
+        if (selectedMovie != null && previousMovie != selectedMovie ) { //Runs if a movie is selected, and it's not already showing
+
             // Fetch and display the movie poster
             getPoster(selectedMovie);
 
@@ -255,7 +256,7 @@ public class MainController implements Initializable {
         // Clear existing constraints
         AnchorPane.clearConstraints(imgPoster);
 
-        // Recalculate and set new constraints
+        // Setting Anchor constraints on the image to get it somewhat centered.
         AnchorPane.setTopAnchor(imgPoster, (imgAnchor.getHeight() - imgPoster.getFitHeight()) / 2);
         AnchorPane.setBottomAnchor(imgPoster, (imgAnchor.getHeight() - imgPoster.getFitHeight()) / 2);
         AnchorPane.setLeftAnchor(imgPoster, (imgAnchor.getWidth() - imgPoster.getFitWidth()) / 2);
@@ -289,8 +290,8 @@ public class MainController implements Initializable {
                 try {
                     movieModel.deleteMovie(movieToDelete);
                     File movieFile = new File(movieToDelete.getFilePath());
-                    if(movieFile.exists()) {
-                        if (movieFile.delete()) {
+                    if(movieFile.exists()) { // Runs if you have the movie file on your computer
+                        if (movieFile.delete()) { //attempts deletion
                         } else {
                             throw new MovieOperationException("Failed to delete the movie file: " + movieToDelete.getFilePath(), null);
                         }
@@ -466,31 +467,43 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * This method retrieves the URL for the first image found via a custom Google search.
+     * The method works by creating a connection to the web, and then making a request via the Google API.
+     * Then it recieves a JSON response, which is then converted back to a simple String.
+     * This is then sent back to the GetPoster() method, which it was called from.
+     *
+     * @param query
+     * @return a String with the URL for an image based upon the given query.
+     * @throws IOException
+     */
     private String fetchFirstImageUrl(String query) throws IOException {
+        //This method is used to fetch the first image url from a Google Custom Search API.
 
-        String urlString = String.format("https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s&searchType=image", URLEncoder.encode(query, "UTF-8"), CX_ID, API_KEY);
+        String urlString = String.format("https://www.googleapis.com/customsearch/v1?q=%s&cx=%s&key=%s&searchType=image", URLEncoder.encode(query, "UTF-8"), CX_ID, API_KEY); // The request URL is made here. This is what we search for in the image search.
         System.out.println("Request URL: " + urlString);
 
-        URL url = new URL(urlString);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        URL url = new URL(urlString); // Making a URL object from the request string above. This also gives it all the URL stuff like protocol, host, port and so on.
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // We open a connection to the URL
         conn.setRequestMethod("GET");
 
-        int responseCode = conn.getResponseCode();
-        if (responseCode == 200) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        int responseCode = conn.getResponseCode(); // Here we recieve the response from the Connection
+        if (responseCode == 200) { //We check the http response code. Http 200 means that status is successful
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream())); // Creating a BufferedReader to read the response from the input stream
             StringBuilder response = new StringBuilder();
             String inputLine;
 
-            while ((inputLine = in.readLine()) != null) {
+            while ((inputLine = in.readLine()) != null) { //Read the response line by line and then append it to the StringBuilder.
                 response.append(inputLine);
             }
-            in.close();
+            in.close(); //Closing the reader
 
-            JSONObject jsonObject = JSONUtil.parseObj(response.toString());
+
+            JSONObject jsonObject = JSONUtil.parseObj(response.toString()); //Parse the StringBuilder into a JSONObject
             if (jsonObject.containsKey("items")) {
-                JSONArray items = jsonObject.getJSONArray("items");
+                JSONArray items = jsonObject.getJSONArray("items"); //Get the array of images from the link.
                 if (!items.isEmpty()) {
-                    return String.valueOf(items.getJSONObject(0).get("link"));
+                    return String.valueOf(items.getJSONObject(0).get("link")); //Get the URL of the image with the index "0".
                 }
             }
         } else {
@@ -500,13 +513,19 @@ public class MainController implements Initializable {
         return null;
     }
 
+    /**
+     * This method, creates a "query" based on the selected movie's title and year, and then calls the fetchFirstImageUrl() method.
+     * After getting the image, it is set in the GUI.
+     * @param movie
+     * @throws IOException
+     */
     private void getPoster(Movie movie) throws IOException {
-        String query = movie.getMovieTitle() + " movie poster " + movie.getMovieYear();
+        String query = movie.getMovieTitle() + " movie poster " + movie.getMovieYear(); //We create the search query here, based of the movie's title and year.
         String imageUrl = fetchFirstImageUrl(query);
 
         if (imageUrl != null) {
-            Image image = new Image(imageUrl);
-            imgPoster.setImage(image);
+            Image image = new Image(imageUrl); //if an image exists, and we got its URL, we turn it into an image.
+            imgPoster.setImage(image); //And here we set the image.
         } else {
             System.out.println("No image found for: " + query);
             alertMethod("Failed to find an image for the movie!", Alert.AlertType.ERROR);

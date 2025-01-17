@@ -34,10 +34,15 @@ public class NewCategoryController {
         this.newMovieController = newMovieController;
     }
 
+    /**
+     * This method is responsible for Adding categories based on the text given in the text box.
+     * @param actionEvent
+     * @throws SQLException
+     */
     @FXML
     private void handleAddCategory(ActionEvent actionEvent) throws SQLException {
 
-        try {
+        try { //if the text box isn't empty, create a new category with the given name.
             if (!txtCategory.getText().isEmpty()) {
                 Category newCategory = new Category(txtCategory.getText());
                 categoryModel.createCategory(newCategory);
@@ -53,11 +58,15 @@ public class NewCategoryController {
         }
     }
 
+    /**
+     * This method is responsible for deleting categories based on the text given in the text box.
+     * @param actionEvent
+     * @throws SQLException
+     */
     @FXML
     private void handleDeleteCategory(ActionEvent actionEvent) throws SQLException {
-try {
+try { //if there is a selected category, delete it.
     if (listCategory.getSelectionModel().getSelectedItem() != null) {
-        // TODO: Implement this shit..
         Category category = listCategory.getSelectionModel().getSelectedItem();
         categoryModel.DeleteCategory(category);
 
@@ -71,15 +80,20 @@ try {
 }
     }
 
+    /**
+     * This method is responsible for updating the list of available categories.
+     * @throws SQLException
+     */
     public void UpdateCategories() throws SQLException {
 
         try {
             if (listCategory != null) {
-                listCategory.getItems().clear();
+                listCategory.getItems().clear(); //clear the list of categories
             }
             for (Category category : categoryModel.getAllCategories()) {
-                listCategory.getItems().add(category);
+                listCategory.getItems().add(category); //repopulate the list of categories
             }
+            //set the list to only show the category name via Cell Factory.
             listCategory.setCellFactory(param -> new ListCell<Category>() {
                 @Override
                 protected void updateItem(Category item, boolean empty) {
