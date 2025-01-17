@@ -109,9 +109,14 @@ public class NewMovieController implements Initializable {
         controller = new MainController();
     }
 
+    /**
+     * Uses filechooser to grab the file the user wants to add to their collection
+     * @param actionEvent button press.
+     */
     public void handleFileChooser(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
+        //file chooser filters
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Video Files", "*.mp4", "*.mpeg4"));
         File file = fileChooser.showOpenDialog(null);
         if (file != null) {
@@ -120,7 +125,12 @@ public class NewMovieController implements Initializable {
         }
     }
 
-    // Handles the addition of a movie based on user input.
+    /**
+     * Creates a new Movie Object based on user input, then goes to database to add it to the database.
+     *
+     * @param actionEvent button press
+     * @throws MovieOperationException in case of errors
+     */
     public void handleAddMovie(ActionEvent actionEvent) throws MovieOperationException {
 
         try {
