@@ -1,0 +1,18 @@
+CREATE TABLE Movie (
+    Id INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
+    Movie_Title NVARCHAR(255) NOT NULL,
+    IMDB_Rating DECIMAL(3,1) DEFAULT NULL,
+    Personal_Rating DECIMAL(3,1) DEFAULT NULL,
+    File_Path NVARCHAR(500) NOT NULL,
+    Movie_Year INT NOT NULL,
+    Last_Opened_Date DATE,
+);
+CREATE TABLE Category (
+    Id INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
+    Category_Name NVARCHAR(100) NOT NULL
+);
+CREATE TABLE CatMov_Junction (
+    PRIMARY KEY (Movie_Id, Category_Id),
+    Movie_Id INT FOREIGN KEY REFERENCES Movie(Id) ON DELETE CASCADE,
+    Category_Id INT FOREIGN KEY REFERENCES Category(Id) ON DELETE CASCADE
+);
