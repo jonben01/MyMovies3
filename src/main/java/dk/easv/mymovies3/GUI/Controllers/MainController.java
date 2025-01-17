@@ -190,6 +190,11 @@ public class MainController implements Initializable {
         });
     }
 
+    /**
+     * When run, this method opens the New Movie Window, while passing its movieModel.
+     * @param actionEvent
+     * @throws MovieOperationException
+     */
     public void handleAddMovie(ActionEvent actionEvent) throws MovieOperationException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/newMovieView.fxml"));
@@ -212,7 +217,11 @@ public class MainController implements Initializable {
         }
     }
 
-    //Calls the edit stage when button is pressed
+    /**
+     * When run, this method opens the New Movie Window, while passing its movieModel and the information of the movie being edited.
+     * @param actionEvent
+     * @throws MovieOperationException
+     */
     public void handleEditMovie(ActionEvent actionEvent) throws MovieOperationException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
         if (selectedMovie == null) {
@@ -240,6 +249,11 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * This method gets run, whenever the user selects a movie on the list. It calls the getPoster() method, and makes UI changes to the ImageView position.
+     * @param mouseEvent
+     * @throws IOException
+     */
     @FXML
     private void onTableViewClick(MouseEvent mouseEvent) throws IOException {
         Movie selectedMovie = tblMovies.getSelectionModel().getSelectedItem();
@@ -261,11 +275,14 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * // Setting Anchor constraints on the image to get it somewhat centered.
+     */
     private void centerImageView() {
         // Clear existing constraints
         AnchorPane.clearConstraints(imgPoster);
 
-        // Setting Anchor constraints on the image to get it somewhat centered.
+
         AnchorPane.setTopAnchor(imgPoster, (imgAnchor.getHeight() - imgPoster.getFitHeight()) / 2);
         AnchorPane.setBottomAnchor(imgPoster, (imgAnchor.getHeight() - imgPoster.getFitHeight()) / 2);
         AnchorPane.setLeftAnchor(imgPoster, (imgAnchor.getWidth() - imgPoster.getFitWidth()) / 2);
